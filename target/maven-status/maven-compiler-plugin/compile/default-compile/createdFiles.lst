@@ -1,1 +1,8 @@
-it/unipi/tonystark/App.class
+it\unipi\tonystark\Utils.class
+it\unipi\tonystark\combiner\LetterCount.class
+it\unipi\tonystark\combiner\LetterFrequency.class
+it\unipi\tonystark\combiner\LetterFrequency$CountMapper.class
+it\unipi\tonystark\MapReduceApp.class
+it\unipi\tonystark\combiner\LetterCount$CountReducer.class
+it\unipi\tonystark\combiner\LetterFrequency$CountReducer.class
+it\unipi\tonystark\combiner\LetterCount$CountMapper.class

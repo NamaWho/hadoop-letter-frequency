@@ -4,6 +4,9 @@ import it.unipi.tonystark.combiner.LetterCount;
 import it.unipi.tonystark.combiner.LetterFrequency;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -38,8 +41,8 @@ public class MapReduceApp {
         countLetterJob.setCombinerClass(LetterCount.CountReducer.class);
         countLetterJob.setReducerClass(LetterCount.CountReducer.class);
 
-        countLetterJob.setOutputKeyClass(org.apache.hadoop.io.Text.class);
-        countLetterJob.setOutputValueClass(org.apache.hadoop.io.LongWritable.class);
+        countLetterJob.setOutputKeyClass(Text.class);
+        countLetterJob.setOutputValueClass(LongWritable.class);
 
         //Set the input paths for the first job
         for (int i = 0; i < otherArgs.length - 2; i++) {
@@ -72,8 +75,12 @@ public class MapReduceApp {
 
         setNumReducers(frequencyLetterJob, conf);
 
-        countLetterJob.setOutputKeyClass(org.apache.hadoop.io.Text.class);
-        countLetterJob.setOutputValueClass(org.apache.hadoop.io.LongWritable.class);
+
+        frequencyLetterJob.setMapOutputValueClass(LongWritable.class);
+        frequencyLetterJob.setOutputKeyClass(Text.class);
+        frequencyLetterJob.setOutputValueClass(DoubleWritable.class);
+
+
 
         //Set the input path for the second job
         for (int i = 0; i < otherArgs.length - 2; i++) {
