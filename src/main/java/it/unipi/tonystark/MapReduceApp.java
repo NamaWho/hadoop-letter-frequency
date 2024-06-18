@@ -3,7 +3,6 @@ package it.unipi.tonystark;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -12,24 +11,24 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 public class MapReduceApp {
 
-    private static final Logger logger = LogManager.getLogger(MapReduceApp.class);
+    //private static final Logger logger = LogManager.getLogger(MapReduceApp.class);
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
         if (otherArgs.length < 5) {
-            logger.error("Usage: MapReduceApp <type> <numReducers> [<input>...] <output1> <output2>");
+            //logger.error("Usage: MapReduceApp <type> <numReducers> [<input>...] <output1> <output2>");
+            System.out.println("Usage: MapReduceApp <type> <numReducers> [<input>...] <output1> <output2>");
             System.exit(1);
         }
 
         if(!otherArgs[0].equals("combiner") && !otherArgs[0].equals("inmappercombiner")){
-            logger.error("The first argument must be 'combiner' or 'inmappercombiner'");
+            //logger.error("The first argument must be 'combiner' or 'inmappercombiner'");
+            System.out.println("The first argument must be 'combiner' or 'inmappercombiner'");
             System.exit(1);
         }
 
@@ -38,7 +37,7 @@ public class MapReduceApp {
         Job countLetterJob = configureCountLetterJob(conf, otherArgs, packagePath);
 
         if (!countLetterJob.waitForCompletion(true)) {
-            logger.error("Error in the job to count the total number of letters");
+            //logger.error("Error in the job to count the total number of letters");
             System.exit(1);
         }
 
@@ -61,10 +60,13 @@ public class MapReduceApp {
 
         job.setReducerClass((Class<Reducer>) Class.forName(packagePath + ".LetterCount$CountReducer"));
 
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(LongWritable.class);
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(LongWritable.class);
 
-        for (int i = 0; i < args.length - 2; i++) {
+        for (int i = 2; i < args.length - 2; i++) {
             FileInputFormat.addInputPath(job, new Path(args[i]));
         }
 
@@ -86,16 +88,19 @@ public class MapReduceApp {
         job.setMapperClass((Class<Mapper>) Class.forName(packagePath + ".LetterFrequency$CountMapper"));
 
         if (args[0].equals("combiner")) {
-            job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountReducer"));
+            job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountCombiner"));
         }
 
         job.setReducerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountReducer"));
 
 
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(LongWritable.class);
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(DoubleWritable.class);
 
-        for (int i = 0; i < args.length - 2; i++) {
+        for (int i = 2; i < args.length - 2; i++) {
             FileInputFormat.addInputPath(job, new Path(args[i]));
         }
 
@@ -111,14 +116,14 @@ public class MapReduceApp {
             int numReducersInt = Integer.parseInt(numReducers);
 
             if (numReducersInt < 0) {
-                logger.error("The number of reducers must be greater than or equal to 0");
+                //logger.error("The number of reducers must be greater than or equal to 0");
                 System.exit(1);
             }
 
             job.setNumReduceTasks((numReducersInt == 0) ? 1 : numReducersInt);
 
         } catch (NumberFormatException e) {
-            logger.error("The number of reducers must be an integer");
+            //logger.error("The number of reducers must be an integer");
             System.exit(1);
         }
     }

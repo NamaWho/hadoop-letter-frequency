@@ -6,8 +6,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,8 +14,6 @@ import java.util.Map;
 import static it.unipi.tonystark.Utils.readLetterCount;
 
 public class LetterFrequency {
-    private static final Logger logger = LogManager.getLogger(LetterFrequency.class);
-
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
 
         //define the associative array used to perform in mapping combinig
@@ -28,8 +24,6 @@ public class LetterFrequency {
         }
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-
-            logger.info("inmappercombiner::CountMapper2.map() called");
 
             //convert each character to lower case
             String line = value.toString().toLowerCase();
@@ -59,8 +53,6 @@ public class LetterFrequency {
     }
 
     public static class CountReducer extends Reducer<Text, LongWritable, Text, DoubleWritable> {
-
-        private final static DoubleWritable result = new DoubleWritable(0);
         private long letterCount;
         public void setup(Context context) throws IOException {
             String path = context.getConfiguration().get("outputPath");
@@ -68,23 +60,21 @@ public class LetterFrequency {
                 letterCount = readLetterCount(context.getConfiguration(), path);
 
             } catch (KeyValueException e) {
-                logger.error("Error reading the file containing the total number of letters::"+path);
-                throw new RuntimeException(e);
+               System.out.println("Error in reading the letter count from the file::"+path);
+               throw new RuntimeException(e);
             }
         }
 
         @Override
         public void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
 
-            logger.info("inmappercombiner::CountReducer2.reduce() called");
-
             long sum = 0;
             for (LongWritable val : values) {
                 sum += val.get();
             }
             double freq = (double) sum / (double) letterCount;
-            result.set(freq);
-            context.write(key, result);
+
+            context.write(key, new DoubleWritable(freq));
         }
 
     }

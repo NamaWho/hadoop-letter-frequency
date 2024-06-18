@@ -3,6 +3,7 @@ it\unipi\tonystark\combiner\LetterCount.class
 it\unipi\tonystark\inmappercombiner\LetterFrequency.class
 it\unipi\tonystark\combiner\LetterFrequency$CountMapper.class
 it\unipi\tonystark\inmappercombiner\LetterFrequency$CountReducer.class
+it\unipi\tonystark\combiner\LetterFrequency$CountCombiner.class
 it\unipi\tonystark\exception\KeyValueException.class
 it\unipi\tonystark\inmappercombiner\LetterCount.class
 it\unipi\tonystark\combiner\LetterCount$CountReducer.class
