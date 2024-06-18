@@ -1,4 +1,4 @@
-package it.unipi.tonystark.combiner;
+package it.unipi.tonystark.inmappercombiner;
 
 import it.unipi.tonystark.Utils;
 import org.apache.hadoop.io.IntWritable;
@@ -10,19 +10,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LetterCount {
-
     private static final Logger logger = LogManager.getLogger(LetterCount.class);
-
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
 
-        private final static LongWritable one = new LongWritable(1);
         private final static Text letterCoutKey = new Text(Utils.getLETTER_COUNT_KEY());
+
+        //define the associative array used to perform in mapping combinig
+        private static Map<String, Long> map;
+        @Override
+        public void setup(Context context) {
+            map = new HashMap<>();
+        }
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
-            logger.info("combiner::CountMapper1.map() called");
+            logger.info("inmappercombiner::CountMapper1.map() called");
 
             //convert each character to lower case
             String line = value.toString().toLowerCase();
@@ -30,8 +36,23 @@ public class LetterCount {
             for (int i = 0; i < line.length(); i++) {
                 char c = line.charAt(i);
                 if (Character.isLetter(c)) {
-                    context.write(letterCoutKey, one);
+                  //H{t} = H{t} + 1
+                  if(map.containsKey(letterCoutKey.toString())){
+                      long currentValue = map.get(letterCoutKey.toString());
+                      map.put(letterCoutKey.toString(), currentValue+1);
+                  }
+                  else
+                      map.put(letterCoutKey.toString(), 1L);
                 }
+            }
+        }
+        @Override
+        public void cleanup(Context context) throws IOException, InterruptedException {
+
+            for (Map.Entry<String, Long> entry : map.entrySet()) {
+                String key = entry.getKey();
+                Long value = entry.getValue();
+                context.write(new Text(key), new LongWritable(value));
             }
         }
     }
@@ -40,7 +61,7 @@ public class LetterCount {
         @Override
         public void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
 
-            logger.info("combiner::CountReducer1.reduce() called");
+            logger.info("inmappercombiner::CountReducer1.reduce() called");
 
             long sum = 0;
             for (LongWritable val : values) {

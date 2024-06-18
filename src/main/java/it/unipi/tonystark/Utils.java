@@ -1,17 +1,24 @@
 package it.unipi.tonystark;
 
+import it.unipi.tonystark.exception.KeyValueException;
+import lombok.Getter;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FSDataInputStream;
-import java.io.BufferedReader;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
-    public static long readLetterCount(Configuration conf, String path) throws IOException {
+    @Getter
+    private static final String LETTER_COUNT_KEY = "total_letter_count";
+    public static long readLetterCount(Configuration conf, String path) throws IOException, KeyValueException {
 
         // Read the output of the first job
         FileSystem fs = FileSystem.get(conf);
@@ -33,11 +40,14 @@ public class Utils {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
                 // The result is on the first line of the output
-                String firstLine = bufferedReader.readLine();
+                String line = bufferedReader.readLine();
 
-                if (firstLine != null) {
-                    long textLength = Long.parseLong(firstLine);
-                    totalTextLength += textLength;
+                if (line != null) {
+
+                    // Parse the key-value pair
+                    Map<String, Long> keyValue = getKeyValue(line);
+
+                    totalTextLength += keyValue.get(LETTER_COUNT_KEY);
                 }
 
                 // Close the input stream
@@ -49,4 +59,27 @@ public class Utils {
         // Return the total text length
         return totalTextLength;
     }
+
+    private static Map<String, Long> getKeyValue(String line) throws KeyValueException {
+
+        String patternString = "^\\s*(\\w+)\\s+(\\d+)\\s*$";
+
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(line);
+
+        if (!matcher.matches()) {
+            throw new KeyValueException("Invalid key-value pair: " + line);
+        }
+
+        String key = matcher.group(1);
+
+        if (!key.equals(LETTER_COUNT_KEY)) {
+            throw new KeyValueException("Invalid key: " + key);
+        }
+
+        Long value = Long.parseLong(matcher.group(2));
+
+        return Map.of(key, value);
+    }
+
 }

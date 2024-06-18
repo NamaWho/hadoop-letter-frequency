@@ -1,13 +1,14 @@
 package it.unipi.tonystark;
 
-import it.unipi.tonystark.combiner.LetterCount;
-import it.unipi.tonystark.combiner.LetterFrequency;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
@@ -18,87 +19,107 @@ import java.io.IOException;
 public class MapReduceApp {
 
     private static final Logger logger = LogManager.getLogger(MapReduceApp.class);
-    private static final int DEFAULT_NUM_REDUCERS = 3;
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
-        if (otherArgs.length < 3) {
-            logger.error("Usage: MapReduceApp < <input>... <output1> <output2>");
+        if (otherArgs.length < 5) {
+            logger.error("Usage: MapReduceApp <type> <numReducers> [<input>...] <output1> <output2>");
             System.exit(1);
         }
 
-        //Start the job to count the total number of letters
-        logger.info("Starting the job to count the total number of letters");
-
-        Job countLetterJob = Job.getInstance(conf, "Letter Count Job");
-
-        //Set the jar by class
-        countLetterJob.setJarByClass(LetterCount.class);
-
-        countLetterJob.setMapperClass(LetterCount.CountMapper.class);
-
-        countLetterJob.setCombinerClass(LetterCount.CountReducer.class);
-        countLetterJob.setReducerClass(LetterCount.CountReducer.class);
-
-        countLetterJob.setOutputKeyClass(Text.class);
-        countLetterJob.setOutputValueClass(LongWritable.class);
-
-        //Set the input paths for the first job
-        for (int i = 0; i < otherArgs.length - 2; i++) {
-            FileInputFormat.addInputPath(countLetterJob, new Path(otherArgs[i]));
+        if(!otherArgs[0].equals("combiner") && !otherArgs[0].equals("inmappercombiner")){
+            logger.error("The first argument must be 'combiner' or 'inmappercombiner'");
+            System.exit(1);
         }
 
-        //Set the output path for the first job
-        FileOutputFormat.setOutputPath(countLetterJob, new Path(otherArgs[otherArgs.length - 2]));
+        String packagePath = "it.unipi.tonystark" + "." + otherArgs[0];
 
-        setNumReducers(countLetterJob, conf);
+        Job countLetterJob = configureCountLetterJob(conf, otherArgs, packagePath);
 
-        // wait for the completion of the first job
-        if(!countLetterJob.waitForCompletion(true)){
+        if (!countLetterJob.waitForCompletion(true)) {
             logger.error("Error in the job to count the total number of letters");
             System.exit(1);
         }
 
-        // Start the job to calculate the frequency of each letter
-        Job frequencyLetterJob = Job.getInstance(conf, "Letter Frequency Job");
+        Job frequencyLetterJob = configureFrequencyLetterJob(conf, otherArgs, packagePath);
 
-        //Use the context to pass the name of the path of the output file of the first job
-        frequencyLetterJob.getConfiguration().set("outputPath", otherArgs[otherArgs.length - 2]);
-
-        //Set the jar by class
-        frequencyLetterJob.setJarByClass(LetterFrequency.class);
-
-        frequencyLetterJob.setMapperClass(LetterFrequency.CountMapper.class);
-        frequencyLetterJob.setCombinerClass(LetterFrequency.CountReducer.class);
-        frequencyLetterJob.setReducerClass(LetterFrequency.CountReducer.class);
-
-        setNumReducers(frequencyLetterJob, conf);
-
-
-        frequencyLetterJob.setMapOutputValueClass(LongWritable.class);
-        frequencyLetterJob.setOutputKeyClass(Text.class);
-        frequencyLetterJob.setOutputValueClass(DoubleWritable.class);
-
-
-
-        //Set the input path for the second job
-        for (int i = 0; i < otherArgs.length - 2; i++) {
-            FileInputFormat.addInputPath(frequencyLetterJob, new Path(otherArgs[i]));
-        }
-
-        //Set the output path for the second job
-        FileOutputFormat.setOutputPath(frequencyLetterJob, new Path(otherArgs[otherArgs.length - 1]));
-
-        // wait for the completion of the second job
         System.exit(frequencyLetterJob.waitForCompletion(true) ? 0 : 1);
-
-
     }
 
-    private static void setNumReducers(Job job, Configuration conf) {
-        //check if the number of reducers is set in the configuration
-        int numReducers = conf.getInt("mapreduce.job.reduces", DEFAULT_NUM_REDUCERS);
-        job.setNumReduceTasks(numReducers);
+    private static Job configureCountLetterJob(Configuration conf, String[] args, String packagePath) throws IOException, ClassNotFoundException {
+
+        Job job = Job.getInstance(conf, "Letter Count Job");
+
+        job.setJarByClass(Class.forName(packagePath + ".LetterCount"));
+
+        job.setMapperClass((Class<Mapper>) Class.forName(packagePath + ".LetterCount$CountMapper"));
+
+        if(args[0].equals("combiner")){
+            job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterCount$CountReducer"));
+        }
+
+        job.setReducerClass((Class<Reducer>) Class.forName(packagePath + ".LetterCount$CountReducer"));
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(LongWritable.class);
+
+        for (int i = 0; i < args.length - 2; i++) {
+            FileInputFormat.addInputPath(job, new Path(args[i]));
+        }
+
+        FileOutputFormat.setOutputPath(job, new Path(args[args.length - 2]));
+
+        setNumReducers(job, args[1]);
+
+        return job;
+    }
+
+    private static Job configureFrequencyLetterJob(Configuration conf, String[] args, String packagePath) throws IOException, ClassNotFoundException {
+
+        Job job = Job.getInstance(conf, "Letter Frequency Job");
+
+        job.getConfiguration().set("outputPath", args[args.length - 2]);
+
+        job.setJarByClass(Class.forName(packagePath + ".LetterFrequency"));
+
+        job.setMapperClass((Class<Mapper>) Class.forName(packagePath + ".LetterFrequency$CountMapper"));
+
+        if (args[0].equals("combiner")) {
+            job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountReducer"));
+        }
+
+        job.setReducerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountReducer"));
+
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(DoubleWritable.class);
+
+        for (int i = 0; i < args.length - 2; i++) {
+            FileInputFormat.addInputPath(job, new Path(args[i]));
+        }
+
+        FileOutputFormat.setOutputPath(job, new Path(args[args.length - 1]));
+
+        setNumReducers(job, args[1]);
+
+        return job;
+    }
+    private static void setNumReducers(Job job, String numReducers) {
+        try {
+
+            int numReducersInt = Integer.parseInt(numReducers);
+
+            if (numReducersInt < 0) {
+                logger.error("The number of reducers must be greater than or equal to 0");
+                System.exit(1);
+            }
+
+            job.setNumReduceTasks((numReducersInt == 0) ? 1 : numReducersInt);
+
+        } catch (NumberFormatException e) {
+            logger.error("The number of reducers must be an integer");
+            System.exit(1);
+        }
     }
 }

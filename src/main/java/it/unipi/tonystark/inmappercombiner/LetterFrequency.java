@@ -1,13 +1,17 @@
-package it.unipi.tonystark.combiner;
+package it.unipi.tonystark.inmappercombiner;
 
 import it.unipi.tonystark.exception.KeyValueException;
-import org.apache.hadoop.io.*;
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static it.unipi.tonystark.Utils.readLetterCount;
 
@@ -16,12 +20,16 @@ public class LetterFrequency {
 
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
 
-        private final static LongWritable one = new LongWritable(1);
-        private final static Text letter = new Text();
+        //define the associative array used to perform in mapping combinig
+        private static Map<String, Long> map;
+        @Override
+        public void setup(Context context) {
+            map = new HashMap<>();
+        }
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
-            logger.info("combiner::CountMapper2.map() called");
+            logger.info("inmappercombiner::CountMapper2.map() called");
 
             //convert each character to lower case
             String line = value.toString().toLowerCase();
@@ -29,9 +37,23 @@ public class LetterFrequency {
             for (int i = 0; i < line.length(); i++) {
                 char c = line.charAt(i);
                 if (Character.isLetter(c)) {
-                    letter.set(String.valueOf(c));
-                    context.write(letter, one);
+                    //H{t} = H{t} + 1
+                    if(map.containsKey(String.valueOf(c))){
+                        long currentValue = map.get(String.valueOf(c));
+                        map.put(String.valueOf(c), currentValue+1);
+                    }
+                    else
+                        map.put(String.valueOf(c), 1L);
                 }
+            }
+        }
+        @Override
+        public void cleanup(Context context) throws IOException, InterruptedException {
+
+            for (Map.Entry<String, Long> entry : map.entrySet()) {
+                String key = entry.getKey();
+                Long value = entry.getValue();
+                context.write(new Text(key), new LongWritable(value));
             }
         }
     }
@@ -41,7 +63,7 @@ public class LetterFrequency {
         private final static DoubleWritable result = new DoubleWritable(0);
         private long letterCount;
         public void setup(Context context) throws IOException {
-           String path = context.getConfiguration().get("outputPath");
+            String path = context.getConfiguration().get("outputPath");
             try {
                 letterCount = readLetterCount(context.getConfiguration(), path);
 
@@ -54,7 +76,7 @@ public class LetterFrequency {
         @Override
         public void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
 
-            logger.info("combiner::CountReducer2.reduce() called");
+            logger.info("inmappercombiner::CountReducer2.reduce() called");
 
             long sum = 0;
             for (LongWritable val : values) {
@@ -67,4 +89,3 @@ public class LetterFrequency {
 
     }
 }
-
