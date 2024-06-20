@@ -5,26 +5,18 @@ import java.text.Normalizer;
 public class Utils {
 
     public static String filterCharacters(String inputStr, boolean normalize) {
-        // Remove characters outside the range 0x0000 to 0x024F (Unicode Basic Latin and Latin-1 Supplement)
+        if (inputStr == null || inputStr.isEmpty()) {
+            return "";
+        }
+
+        if (normalize) inputStr = Normalizer.normalize(inputStr, Normalizer.Form.NFD);
         StringBuilder filteredString = new StringBuilder();
 
-        for(Character c: inputStr.toCharArray()) {
-            if (c <= 0x024F) {
-                filteredString.append(c);
+        for (char c : inputStr.toCharArray()) {
+            if (c <= 0x024F && c != 0x00AA && c!= 0x00BA && Character.isLetter(c)) {
+                filteredString.append(Character.toLowerCase(c));
             }
         }
-
-        // Apply regex to remove unwanted characters and convert to lowercase
-        String value = filteredString.toString().replaceAll("[^\\p{L}]", "").toLowerCase();
-
-        // Normalize the string if requested
-        if (normalize) {
-            // Normalize to NFD form and remove combining diacritical marks
-            value = Normalizer.normalize(value, Normalizer.Form.NFD)
-                    .replaceAll("\\p{M}", "");
-        }
-
-        return value;
+        return filteredString.toString();
     }
-
 }
