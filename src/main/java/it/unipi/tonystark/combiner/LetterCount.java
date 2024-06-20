@@ -1,5 +1,6 @@
 package it.unipi.tonystark.combiner;
 
+import it.unipi.tonystark.MapReduceApp;
 import it.unipi.tonystark.Utils;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -12,18 +13,23 @@ public class LetterCount {
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
 
         private final static LongWritable one = new LongWritable(1);
-        private final static Text letterCoutKey = new Text(Utils.getLETTER_COUNT_KEY());
+        private final static Text letterCountKey = new Text(MapReduceApp.getLETTER_COUNT_KEY());
+        private Boolean multiLingual;
+
+        @Override
+        public void setup(Context context) {
+            multiLingual = Boolean.parseBoolean(context.getConfiguration().get("multiLingual"));
+        }
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
-            //convert each character to lower case
+            //convert each character to a lower case
             String line = value.toString().toLowerCase();
 
-            for (int i = 0; i < line.length(); i++) {
-                char c = line.charAt(i);
-                if (Character.isLetter(c)) {
-                    context.write(letterCoutKey, one);
-                }
+            line = Utils.removeNonLetters(line, multiLingual);
+
+            for(Character c: line.toCharArray()) {
+                context.write(letterCountKey, one);
             }
         }
     }

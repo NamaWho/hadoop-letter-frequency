@@ -1,6 +1,11 @@
 package it.unipi.tonystark;
 
+import it.unipi.tonystark.exception.KeyValueException;
+import lombok.Getter;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -12,32 +17,41 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class MapReduceApp {
 
-    //private static final Logger logger = LogManager.getLogger(MapReduceApp.class);
+    @Getter
+    private static final String LETTER_COUNT_KEY = "total_letter_count";
+
+    @Getter
+    private static final String COUNT_OUTPUT_PATH_PARAM_NAME = "countOutputPath";
+
+    private static final int JOB_TYPE_INDEX = 0;
+    private static final int NUM_REDUCERS_INDEX = 1;
+    private static final int MULTI_LINGUAL_INDEX = 2;
+    private static final int INPUT_PATH_INDEX = 3;
+    private static final int MIN_ARGS_LENGTH = 6;
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
-        if (otherArgs.length < 5) {
-            //logger.error("Usage: MapReduceApp <type> <numReducers> [<input>...] <output1> <output2>");
-            System.out.println("Usage: MapReduceApp <type> <numReducers> [<input>...] <output1> <output2>");
+        if (!checkParameters(otherArgs, conf)) {
             System.exit(1);
         }
 
-        if(!otherArgs[0].equals("combiner") && !otherArgs[0].equals("inmappercombiner")){
-            //logger.error("The first argument must be 'combiner' or 'inmappercombiner'");
-            System.out.println("The first argument must be 'combiner' or 'inmappercombiner'");
-            System.exit(1);
-        }
-
-        String packagePath = "it.unipi.tonystark" + "." + otherArgs[0];
+        String packagePath = "it.unipi.tonystark" + "." + otherArgs[JOB_TYPE_INDEX];
 
         Job countLetterJob = configureCountLetterJob(conf, otherArgs, packagePath);
 
         if (!countLetterJob.waitForCompletion(true)) {
-            //logger.error("Error in the job to count the total number of letters");
+            System.out.println("Error in the count letter job");
             System.exit(1);
         }
 
@@ -50,11 +64,13 @@ public class MapReduceApp {
 
         Job job = Job.getInstance(conf, "Letter Count Job");
 
+        job.getConfiguration().set("multiLingual", args[MULTI_LINGUAL_INDEX]);
+
         job.setJarByClass(Class.forName(packagePath + ".LetterCount"));
 
         job.setMapperClass((Class<Mapper>) Class.forName(packagePath + ".LetterCount$CountMapper"));
 
-        if(args[0].equals("combiner")){
+        if(args[JOB_TYPE_INDEX].equals("combiner")){
             job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterCount$CountReducer"));
         }
 
@@ -66,13 +82,11 @@ public class MapReduceApp {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(LongWritable.class);
 
-        for (int i = 2; i < args.length - 2; i++) {
+        for (int i = INPUT_PATH_INDEX; i < args.length - 2; i++) {
             FileInputFormat.addInputPath(job, new Path(args[i]));
         }
 
         FileOutputFormat.setOutputPath(job, new Path(args[args.length - 2]));
-
-        setNumReducers(job, args[1]);
 
         return job;
     }
@@ -81,13 +95,15 @@ public class MapReduceApp {
 
         Job job = Job.getInstance(conf, "Letter Frequency Job");
 
-        job.getConfiguration().set("outputPath", args[args.length - 2]);
+        job.getConfiguration().set("multiLingual", args[MULTI_LINGUAL_INDEX]);
+
+        job.getConfiguration().set(COUNT_OUTPUT_PATH_PARAM_NAME, args[args.length - 2]);
 
         job.setJarByClass(Class.forName(packagePath + ".LetterFrequency"));
 
         job.setMapperClass((Class<Mapper>) Class.forName(packagePath + ".LetterFrequency$CountMapper"));
 
-        if (args[0].equals("combiner")) {
+        if (args[JOB_TYPE_INDEX].equals("combiner")) {
             job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountCombiner"));
         }
 
@@ -100,31 +116,128 @@ public class MapReduceApp {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(DoubleWritable.class);
 
-        for (int i = 2; i < args.length - 2; i++) {
+        for (int i = INPUT_PATH_INDEX; i < args.length - 2; i++) {
             FileInputFormat.addInputPath(job, new Path(args[i]));
         }
 
         FileOutputFormat.setOutputPath(job, new Path(args[args.length - 1]));
 
-        setNumReducers(job, args[1]);
+        setNumReducers(job, args[NUM_REDUCERS_INDEX]);
 
         return job;
     }
     private static void setNumReducers(Job job, String numReducers) {
-        try {
+        job.setNumReduceTasks(Integer.parseInt(numReducers));
+    }
+    public static long getLetterCount(Configuration conf, String path) throws IOException, KeyValueException {
 
-            int numReducersInt = Integer.parseInt(numReducers);
+        // Read the output of the first job
+        FileSystem fs = FileSystem.get(conf);
+        Path outputDirPath = new Path(path);
 
-            if (numReducersInt < 0) {
-                //logger.error("The number of reducers must be greater than or equal to 0");
-                System.exit(1);
+        // Initialize the total text length
+        long totalTextLength = 0;
+
+        // Get a list of all files in the output directory
+        FileStatus[] status = fs.listStatus(outputDirPath);
+
+        for (FileStatus fileStatus : status) {
+            String fileName = fileStatus.getPath().getName();
+
+            // Ignore the _SUCCESS file
+            if (!fileName.equals("_SUCCESS")) {
+                // Open the file
+                FSDataInputStream inputStream = fs.open(fileStatus.getPath());
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+                // The result is on the first line of the output
+                String line = bufferedReader.readLine();
+
+                if (line != null) {
+
+                    // Parse the key-value pair
+                    Map<String, Long> keyValue = getKeyValue(line);
+
+                    totalTextLength += keyValue.get(LETTER_COUNT_KEY);
+                }
+
+                // Close the input stream
+                bufferedReader.close();
+                inputStream.close();
             }
-
-            job.setNumReduceTasks((numReducersInt == 0) ? 1 : numReducersInt);
-
-        } catch (NumberFormatException e) {
-            //logger.error("The number of reducers must be an integer");
-            System.exit(1);
         }
+
+        // Return the total text length
+        return totalTextLength;
+    }
+
+    private static Map<String, Long> getKeyValue(String line) throws KeyValueException {
+
+        String patternString = "^\\s*(\\w+)\\s+(\\d+)\\s*$";
+
+        Pattern pattern = Pattern.compile(patternString);
+        Matcher matcher = pattern.matcher(line);
+
+        if (!matcher.matches()) {
+            throw new KeyValueException("Invalid key-value pair: " + line);
+        }
+
+        String key = matcher.group(1);
+
+        if (!key.equals(LETTER_COUNT_KEY)) {
+            throw new KeyValueException("Invalid key: " + key);
+        }
+
+        Long value = Long.parseLong(matcher.group(2));
+
+        Map<String, Long> map = new HashMap<>();
+        map.put(key, value);
+
+        return map;
+    }
+    public static boolean checkParameters(String[] args, Configuration conf) {
+        if (args.length < MIN_ARGS_LENGTH) {
+            System.err.println("Usage: MapReduceApp <type> <numReducers> <multiLingual> [<input>...] <output1> <output2>");
+            return false;
+        }
+
+        if (!args[JOB_TYPE_INDEX].equals("combiner") && !args[JOB_TYPE_INDEX].equals("inmappercombiner")) {
+            System.err.println("The first argument must be 'combiner' or 'inmappercombiner'");
+            return false;
+        }
+
+        try {
+            int numReducers = Integer.parseInt(args[NUM_REDUCERS_INDEX]);
+            if (numReducers < 1) {
+                System.err.println("The number of reducers must be a positive integer");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("The number of reducers must be a valid integer");
+            return false;
+        }
+
+        if (!args[MULTI_LINGUAL_INDEX].equals("true") && !args[MULTI_LINGUAL_INDEX].equals("false")) {
+            System.err.println("The multiLingual argument must be 'true' or 'false'");
+            return false;
+        }
+
+        // Check if the input paths exist in the hadoop file system
+        FileSystem fs;
+        try {
+            fs = FileSystem.get(conf);
+            for (int i = INPUT_PATH_INDEX; i < args.length - 2; i++) {
+                Path inputPath = new Path(args[i]);
+                if (!fs.exists(inputPath)) {
+                    System.err.println("Input path " + inputPath + " does not exist");
+                    return false;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error while getting the file system");
+            return false;
+        }
+
+        return true;
     }
 }
