@@ -39,9 +39,9 @@ def generate_output_file_name(file_paths):
     # Concatenate filenames
     combined_name = "_".join(base_names)
     # Return the formatted output file name
-    return f"Letter_Frequency_{combined_name}.txt"
+    return f"Letter_Count_{combined_name}.txt"
 
-def letter_frequency(file_paths, merge_accents):
+def letter_count(file_paths, normalize):
     # Start the timer
     start_time = time.time()
 
@@ -49,8 +49,8 @@ def letter_frequency(file_paths, merge_accents):
         # Merge contents of all files
         merged_content = merge_files(file_paths)
 
-        # Normalize content based on merge_accents flag
-        content = filter_characters(merged_content, merge_accents)
+        # Normalize content based on normalize flag
+        content = filter_characters(merged_content, normalize)
 
         # Count the total number of letters and the frequency of each letter
         letter_counts = Counter(content)
@@ -58,13 +58,9 @@ def letter_frequency(file_paths, merge_accents):
 
         # Prepare the output content
         output_content = [
-            f"Total letters: {total_letters}\n\n",
+            f"Total letters: {total_letters}\n",
         ]
-        output_content += [
-            f"{letter}: {count / total_letters:.20f}\n"
-            for letter, count in sorted(letter_counts.items())
-        ]
-
+       
         # Determine output file name based on combined input filenames
         output_file_name = generate_output_file_name(file_paths)
         output_file_path = os.path.join(os.path.dirname(file_paths[0]), output_file_name)
@@ -85,12 +81,3 @@ def letter_frequency(file_paths, merge_accents):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python LetterFrequency.py <file_path1> <file_path2> ... <normalize>")
-        print("Example: python LetterFrequency.py path/to/textfile1.txt path/to/textfile2.txt True")
-    else:
-        file_paths = sys.argv[1:-1]
-        merge_accents = sys.argv[-1].lower() == 'true'
-        letter_frequency(file_paths, merge_accents)
