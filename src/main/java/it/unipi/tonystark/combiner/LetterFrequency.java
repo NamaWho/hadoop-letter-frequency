@@ -54,14 +54,7 @@ public class LetterFrequency {
     public static class CountReducer extends Reducer<Text, LongWritable, Text, DoubleWritable> {
         private long letterCount;
         public void setup(Context context) throws IOException {
-           String path = context.getConfiguration().get(MapReduceApp.getCOUNT_OUTPUT_PATH_PARAM_NAME());
-            try {
-                letterCount = getLetterCount(context.getConfiguration(), path);
-
-            } catch (KeyValueException e) {
-                System.err.println("Error in reading the letter count from the file::"+path);
-                throw new RuntimeException(e);
-            }
+            letterCount = context.getConfiguration().getLong(MapReduceApp.getLETTER_COUNT_VALUE_PARAM_NAME(), 1);
         }
 
         @Override

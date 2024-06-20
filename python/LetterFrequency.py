@@ -67,11 +67,16 @@ def letter_frequency(file_paths, merge_accents):
 
         # Determine output file name based on combined input filenames
         output_file_name = generate_output_file_name(file_paths)
-        output_file_path = os.path.join(os.path.dirname(file_paths[0]), output_file_name)
 
-        # Write the output to the file
-        with open(output_file_path, 'w', encoding='utf-8') as output_file:
-            output_file.writelines(output_content)
+        # Specify the output directory relative to the current working directory
+        output_directory = os.path.join(os.getcwd(), 'output_py')
+
+        # Ensure the output directory exists, create if not
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+
+        # Construct the full output file path
+        output_file_path = os.path.join(output_directory, output_file_name)
 
         # End the timer
         end_time = time.time()
@@ -80,7 +85,8 @@ def letter_frequency(file_paths, merge_accents):
         execution_time = end_time - start_time
 
         # Save the execution time to the output file
-        with open(output_file_path, 'a', encoding='utf-8') as output_file:
+        with open(output_file_path, 'w', encoding='utf-8') as output_file:
+            output_file.writelines(output_content)
             output_file.write(f"\nExecution time: {execution_time} seconds\n")
 
     except Exception as e:

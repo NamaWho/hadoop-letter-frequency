@@ -31,7 +31,7 @@ public class MapReduceApp {
     private static final String LETTER_COUNT_KEY = "total_letter_count";
 
     @Getter
-    private static final String COUNT_OUTPUT_PATH_PARAM_NAME = "countOutputPath";
+    private static final String LETTER_COUNT_VALUE_PARAM_NAME = "letterCountValue";
 
     @Getter
     private static final String NORMALIZE_PARAM_NAME = "normalize";
@@ -40,7 +40,7 @@ public class MapReduceApp {
     private static final int NORMALIZE_INDEX = 2;
     private static final int INPUT_PATH_INDEX = 3;
     private static final int MIN_ARGS_LENGTH = 6;
-    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException, KeyValueException {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
@@ -93,13 +93,15 @@ public class MapReduceApp {
         return job;
     }
 
-    private static Job configureFrequencyLetterJob(Configuration conf, String[] args, String packagePath) throws IOException, ClassNotFoundException {
+    private static Job configureFrequencyLetterJob(Configuration conf, String[] args, String packagePath) throws IOException, ClassNotFoundException, KeyValueException {
 
         Job job = Job.getInstance(conf, "Letter Frequency Job");
 
         job.getConfiguration().set(NORMALIZE_PARAM_NAME, args[NORMALIZE_INDEX]);
 
-        job.getConfiguration().set(COUNT_OUTPUT_PATH_PARAM_NAME, args[args.length - 2]);
+        long totalLetterCount = getLetterCount(conf, args[args.length - 2]);
+
+        job.getConfiguration().setLong(LETTER_COUNT_VALUE_PARAM_NAME, totalLetterCount);
 
         job.setJarByClass(Class.forName(packagePath + ".LetterFrequency"));
 
