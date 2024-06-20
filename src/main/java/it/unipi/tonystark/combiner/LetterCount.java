@@ -14,19 +14,16 @@ public class LetterCount {
 
         private final static LongWritable one = new LongWritable(1);
         private final static Text letterCountKey = new Text(MapReduceApp.getLETTER_COUNT_KEY());
-        private Boolean multiLingual;
+        private Boolean normalize;
 
         @Override
         public void setup(Context context) {
-            multiLingual = Boolean.parseBoolean(context.getConfiguration().get("multiLingual"));
+            normalize = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
         }
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
-            //convert each character to a lower case
-            String line = value.toString().toLowerCase();
-
-            line = Utils.removeNonLetters(line, multiLingual);
+            String line = Utils.filterCharacters(value.toString(), normalize);
 
             for(Character c: line.toCharArray()) {
                 context.write(letterCountKey, one);

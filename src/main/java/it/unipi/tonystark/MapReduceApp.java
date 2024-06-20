@@ -33,9 +33,11 @@ public class MapReduceApp {
     @Getter
     private static final String COUNT_OUTPUT_PATH_PARAM_NAME = "countOutputPath";
 
+    @Getter
+    private static final String NORMALIZE_PARAM_NAME = "normalize";
     private static final int JOB_TYPE_INDEX = 0;
     private static final int NUM_REDUCERS_INDEX = 1;
-    private static final int MULTI_LINGUAL_INDEX = 2;
+    private static final int NORMALIZE_INDEX = 2;
     private static final int INPUT_PATH_INDEX = 3;
     private static final int MIN_ARGS_LENGTH = 6;
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
@@ -51,7 +53,7 @@ public class MapReduceApp {
         Job countLetterJob = configureCountLetterJob(conf, otherArgs, packagePath);
 
         if (!countLetterJob.waitForCompletion(true)) {
-            System.out.println("Error in the count letter job");
+            System.err.println("Error in the count letter job");
             System.exit(1);
         }
 
@@ -64,7 +66,7 @@ public class MapReduceApp {
 
         Job job = Job.getInstance(conf, "Letter Count Job");
 
-        job.getConfiguration().set("multiLingual", args[MULTI_LINGUAL_INDEX]);
+        job.getConfiguration().set(NORMALIZE_PARAM_NAME, args[NORMALIZE_INDEX]);
 
         job.setJarByClass(Class.forName(packagePath + ".LetterCount"));
 
@@ -95,7 +97,7 @@ public class MapReduceApp {
 
         Job job = Job.getInstance(conf, "Letter Frequency Job");
 
-        job.getConfiguration().set("multiLingual", args[MULTI_LINGUAL_INDEX]);
+        job.getConfiguration().set(NORMALIZE_PARAM_NAME, args[NORMALIZE_INDEX]);
 
         job.getConfiguration().set(COUNT_OUTPUT_PATH_PARAM_NAME, args[args.length - 2]);
 
@@ -197,7 +199,7 @@ public class MapReduceApp {
     }
     public static boolean checkParameters(String[] args, Configuration conf) {
         if (args.length < MIN_ARGS_LENGTH) {
-            System.err.println("Usage: MapReduceApp <type> <numReducers> <multiLingual> [<input>...] <output1> <output2>");
+            System.err.println("Usage: MapReduceApp <type> <numReducers> <normalize> [<input>...] <output1> <output2>");
             return false;
         }
 
@@ -217,8 +219,8 @@ public class MapReduceApp {
             return false;
         }
 
-        if (!args[MULTI_LINGUAL_INDEX].equals("true") && !args[MULTI_LINGUAL_INDEX].equals("false")) {
-            System.err.println("The multiLingual argument must be 'true' or 'false'");
+        if (!args[NORMALIZE_INDEX].equals("true") && !args[NORMALIZE_INDEX].equals("false")) {
+            System.err.println("The 'normalize' argument must be 'true' or 'false'");
             return false;
         }
 

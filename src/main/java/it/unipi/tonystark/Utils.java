@@ -4,22 +4,27 @@ import java.text.Normalizer;
 
 public class Utils {
 
-    /**
-     * This method removes all the non-letter characters from a string
-     * @param value the string to convert
-     * @param accent if true, the method will remove also the accents
-     * @return the string without non-letter characters
-     */
-    public static String removeNonLetters(String value, boolean accent) {
-        if (accent) {
-            //split each letter with an accent into two characters: the letter and the accent
-            //i.e. "à" -> "a`"
-            value = Normalizer.normalize(value, Normalizer.Form.NFD);
-            return value.replaceAll("[^\\p{L}]", "");
+    public static String filterCharacters(String inputStr, boolean normalize) {
+        // Remove characters outside the range 0x0000 to 0x024F (Unicode Basic Latin and Latin-1 Supplement)
+        StringBuilder filteredString = new StringBuilder();
+
+        for(Character c: inputStr.toCharArray()) {
+            if (c <= 0x024F) {
+                filteredString.append(c);
+            }
         }
-        else {
-            return value.replaceAll("[^\\p{L}]", "");
+
+        // Apply regex to remove unwanted characters and convert to lowercase
+        String value = filteredString.toString().replaceAll("[^\\p{L}]", "").toLowerCase();
+
+        // Normalize the string if requested
+        if (normalize) {
+            // Normalize to NFD form and remove combining diacritical marks
+            value = Normalizer.normalize(value, Normalizer.Form.NFD)
+                    .replaceAll("\\p{M}", "");
         }
+
+        return value;
     }
 
 }

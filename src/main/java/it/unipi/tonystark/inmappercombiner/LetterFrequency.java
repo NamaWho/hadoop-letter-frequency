@@ -20,12 +20,12 @@ public class LetterFrequency {
 
         //define the associative array used to perform in mapping combinig
         private static Map<String, Long> map;
-        private Boolean multiLingual;
+        private Boolean normalize;
         @Override
         public void setup(Context context) {
 
             map = new HashMap<>();
-            multiLingual = Boolean.parseBoolean(context.getConfiguration().get("multiLingual"));
+            normalize = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
         }
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
@@ -33,7 +33,7 @@ public class LetterFrequency {
             //convert each character to a lower case
             String line = value.toString().toLowerCase();
 
-            line = Utils.removeNonLetters(line, multiLingual);
+            line = Utils.filterCharacters(line, normalize);
 
             for(Character c: line.toCharArray()) {
                 //H{t} = H{t} + 1

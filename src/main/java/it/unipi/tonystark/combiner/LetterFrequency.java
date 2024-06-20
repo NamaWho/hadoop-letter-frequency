@@ -19,20 +19,17 @@ public class LetterFrequency {
 
         private final static LongWritable one = new LongWritable(1);
 
-        private Boolean multiLingual;
+        private Boolean normalized;
         @Override
         public void setup(Context context) {
-            multiLingual = Boolean.parseBoolean(context.getConfiguration().get("multiLingual"));
+            normalized = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
         }
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
             Text letter = new Text();
 
-            //convert each character to a lower case
-            String line = value.toString().toLowerCase();
-
-            line = Utils.removeNonLetters(line, multiLingual);
+            String line = Utils.filterCharacters(value.toString(), normalized);
 
             for(Character c: line.toCharArray()) {
                 letter.set(String.valueOf(c));
