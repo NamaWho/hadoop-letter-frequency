@@ -65,7 +65,7 @@ public class LetterFrequency {
                 letterCount = getLetterCount(context.getConfiguration(), path);
 
             } catch (KeyValueException e) {
-               System.out.println("Error in reading the letter count from the file::"+path);
+               System.err.println("Error in reading the letter count from the file::"+path);
                throw new RuntimeException(e);
             }
         }
