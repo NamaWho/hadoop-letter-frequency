@@ -2,30 +2,24 @@ import sys
 import time
 import os
 import unicodedata
-import re
 from collections import Counter
 
 
 def filter_characters(input_str, normalize):
     # Initialize an empty list to store filtered characters
     filtered_chars = []
-    
-    # Iterate through each character in the input string
-    filtered_chars = [char for char in input_str if 0x0000 <= ord(char) <= 0x024F]
-    
-    # Join the filtered characters into a single string
-    value = ''.join(filtered_chars)
-    
-    # Apply regex to remove unwanted characters and convert to lowercase
-    value = re.sub(r'[\W\d_\sªº]', '', value).lower()
-    
+
     # Normalize the string if requested
     if normalize:
-        value = unicodedata.normalize('NFD', value)
-        # Remove combining diacritical marks
-        value = re.sub(r'[\u0300-\u036f]', '', value)
-    
-    return value
+        input_str = unicodedata.normalize('NFD', input_str)
+
+    # Iterate through each character in the input string
+    filtered_chars = [char for char in input_str if ord(char) <= 0x024F and char.isalpha() and char not in 'ºª']
+
+    # Join the filtered characters into a single string
+    value = ''.join(filtered_chars)
+
+    return value.lower()
 
 def merge_files(file_paths):
     merged_content = ""
@@ -68,7 +62,7 @@ def letter_frequency(file_paths, merge_accents):
             f"Total letters: {total_letters}\n\n",
         ]
         output_content += [
-            f"{letter}: {count / total_letters:.16f}\n"
+            f"{letter}: {count / total_letters:.20f}\n"
             for letter, count in sorted(letter_counts.items())
         ]
 
