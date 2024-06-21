@@ -1,0 +1,161 @@
+2024-06-20 18:34:27,417 INFO client.RMProxy: Connecting to ResourceManager at hadoop-namenode/10.1.1.113:8032
+2024-06-20 18:34:28,185 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hadoop/.staging/job_1718873180387_0065
+2024-06-20 18:34:28,378 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:34:28,675 INFO input.FileInputFormat: Total input files to process : 3
+2024-06-20 18:34:28,762 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:34:28,814 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:34:28,834 INFO mapreduce.JobSubmitter: number of splits:3
+2024-06-20 18:34:29,112 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:34:29,158 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1718873180387_0065
+2024-06-20 18:34:29,158 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2024-06-20 18:34:29,507 INFO conf.Configuration: resource-types.xml not found
+2024-06-20 18:34:29,507 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2024-06-20 18:34:29,585 INFO impl.YarnClientImpl: Submitted application application_1718873180387_0065
+2024-06-20 18:34:29,641 INFO mapreduce.Job: The url to track the job: http://hadoop-namenode:8088/proxy/application_1718873180387_0065/
+2024-06-20 18:34:29,642 INFO mapreduce.Job: Running job: job_1718873180387_0065
+2024-06-20 18:35:55,414 INFO mapreduce.Job: Job job_1718873180387_0065 running in uber mode : false
+2024-06-20 18:35:55,422 INFO mapreduce.Job:  map 0% reduce 0%
+2024-06-20 18:36:05,609 INFO mapreduce.Job:  map 67% reduce 0%
+2024-06-20 18:36:06,619 INFO mapreduce.Job:  map 100% reduce 0%
+2024-06-20 18:36:10,650 INFO mapreduce.Job:  map 100% reduce 100%
+2024-06-20 18:36:10,667 INFO mapreduce.Job: Job job_1718873180387_0065 completed successfully
+2024-06-20 18:36:10,811 INFO mapreduce.Job: Counters: 53
+	File System Counters
+		FILE: Number of bytes read=93
+		FILE: Number of bytes written=873375
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=645141
+		HDFS: Number of bytes written=26
+		HDFS: Number of read operations=14
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+	Job Counters 
+		Launched map tasks=3
+		Launched reduce tasks=1
+		Data-local map tasks=3
+		Total time spent by all maps in occupied slots (ms)=47854
+		Total time spent by all reduces in occupied slots (ms)=5206
+		Total time spent by all map tasks (ms)=23927
+		Total time spent by all reduce tasks (ms)=2603
+		Total vcore-milliseconds taken by all map tasks=23927
+		Total vcore-milliseconds taken by all reduce tasks=2603
+		Total megabyte-milliseconds taken by all map tasks=6125312
+		Total megabyte-milliseconds taken by all reduce tasks=666368
+	Map-Reduce Framework
+		Map input records=20923
+		Map output records=3
+		Map output bytes=81
+		Map output materialized bytes=105
+		Input split bytes=403
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=1
+		Reduce shuffle bytes=105
+		Reduce input records=3
+		Reduce output records=1
+		Spilled Records=6
+		Shuffled Maps =3
+		Failed Shuffles=0
+		Merged Map outputs=3
+		GC time elapsed (ms)=642
+		CPU time spent (ms)=3260
+		Physical memory (bytes) snapshot=988037120
+		Virtual memory (bytes) snapshot=7466717184
+		Total committed heap usage (bytes)=731906048
+		Peak Map Physical memory (bytes)=274640896
+		Peak Map Virtual memory (bytes)=1866461184
+		Peak Reduce Physical memory (bytes)=170704896
+		Peak Reduce Virtual memory (bytes)=1871929344
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=644738
+	File Output Format Counters 
+		Bytes Written=26
+2024-06-20 18:36:10,859 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:36:10,899 INFO client.RMProxy: Connecting to ResourceManager at hadoop-namenode/10.1.1.113:8032
+2024-06-20 18:36:10,923 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hadoop/.staging/job_1718873180387_0070
+2024-06-20 18:36:10,942 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:36:10,986 INFO input.FileInputFormat: Total input files to process : 3
+2024-06-20 18:36:11,002 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:36:11,042 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:36:11,057 INFO mapreduce.JobSubmitter: number of splits:3
+2024-06-20 18:36:11,083 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2024-06-20 18:36:11,111 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1718873180387_0070
+2024-06-20 18:36:11,112 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2024-06-20 18:36:11,141 INFO impl.YarnClientImpl: Submitted application application_1718873180387_0070
+2024-06-20 18:36:11,144 INFO mapreduce.Job: The url to track the job: http://hadoop-namenode:8088/proxy/application_1718873180387_0070/
+2024-06-20 18:36:11,144 INFO mapreduce.Job: Running job: job_1718873180387_0070
+2024-06-20 18:38:09,898 INFO mapreduce.Job: Job job_1718873180387_0070 running in uber mode : false
+2024-06-20 18:38:09,900 INFO mapreduce.Job:  map 0% reduce 0%
+2024-06-20 18:38:18,993 INFO mapreduce.Job:  map 100% reduce 0%
+2024-06-20 18:38:25,043 INFO mapreduce.Job:  map 100% reduce 100%
+2024-06-20 18:38:25,061 INFO mapreduce.Job: Job job_1718873180387_0070 completed successfully
+2024-06-20 18:38:25,111 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=1397
+		FILE: Number of bytes written=876799
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=645141
+		HDFS: Number of bytes written=881
+		HDFS: Number of read operations=14
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+	Job Counters 
+		Killed map tasks=1
+		Launched map tasks=3
+		Launched reduce tasks=1
+		Data-local map tasks=3
+		Total time spent by all maps in occupied slots (ms)=39216
+		Total time spent by all reduces in occupied slots (ms)=7266
+		Total time spent by all map tasks (ms)=19608
+		Total time spent by all reduce tasks (ms)=3633
+		Total vcore-milliseconds taken by all map tasks=19608
+		Total vcore-milliseconds taken by all reduce tasks=3633
+		Total megabyte-milliseconds taken by all map tasks=5019648
+		Total megabyte-milliseconds taken by all reduce tasks=930048
+	Map-Reduce Framework
+		Map input records=20923
+		Map output records=113
+		Map output bytes=1165
+		Map output materialized bytes=1409
+		Input split bytes=403
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=38
+		Reduce shuffle bytes=1409
+		Reduce input records=113
+		Reduce output records=38
+		Spilled Records=226
+		Shuffled Maps =3
+		Failed Shuffles=0
+		Merged Map outputs=3
+		GC time elapsed (ms)=680
+		CPU time spent (ms)=2670
+		Physical memory (bytes) snapshot=989044736
+		Virtual memory (bytes) snapshot=7462551552
+		Total committed heap usage (bytes)=730857472
+		Peak Map Physical memory (bytes)=274149376
+		Peak Map Virtual memory (bytes)=1863925760
+		Peak Reduce Physical memory (bytes)=170819584
+		Peak Reduce Virtual memory (bytes)=1872220160
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=644738
+	File Output Format Counters 
+		Bytes Written=881

@@ -1,2 +1,0 @@
-16:26:37.276 [main] ERROR it.unipi.tonystark.MapReduceApp - Usage: MapReduceApp < <input>... <output1> <output2>
-16:27:17.501 [main] INFO  it.unipi.tonystark.MapReduceApp - Starting the job to count the total number of letters
