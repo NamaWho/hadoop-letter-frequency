@@ -93,10 +93,23 @@ def letter_frequency(file_paths, merge_accents):
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
+    print("\n")
+    print("Letter Frequency Analyzer")
+    print("-------------------------")
     if len(sys.argv) < 3:
+        print("This script calculates the frequency of each letter in a given text file.")
+        print("The results are saved in a text file in the 'output_py' directory.")
+        print("The output file name is generated based on the input file names.")
+        print("The 'normalize' flag determines whether to merge accented characters.")
+        print("The 'normalize' flag should be 'True' or 'False'.")
+        print("\n")
         print("Usage: python LetterFrequency.py <file_path1> <file_path2> ... <normalize>")
         print("Example: python LetterFrequency.py path/to/textfile1.txt path/to/textfile2.txt True")
+        print("\n")
     else:
         file_paths = sys.argv[1:-1]
-        merge_accents = sys.argv[-1].lower() == 'true'
+        merge_accents = sys.argv[-1].lower() == 'true' or sys.argv[-1].lower() == 't' or sys.argv[-1].lower() == '1'
         letter_frequency(file_paths, merge_accents)
+        print("Letter frequency analysis complete.")
+        print("Output files saved in 'output_py' directory.")
+        print("\n")
