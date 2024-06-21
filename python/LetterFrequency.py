@@ -3,6 +3,7 @@ import time
 import os
 import unicodedata
 from collections import Counter
+from pathlib import Path
 
 def filter_characters(input_str, normalize):
     # Initialize an empty list to store filtered characters
@@ -21,25 +22,25 @@ def filter_characters(input_str, normalize):
     return value.lower()
 
 def merge_files(file_paths):
-    merged_content = ""
+    merged_content = []
     for file_path in file_paths:
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 content = file.read().lower()
-                merged_content += content
-        except FileNotFoundError:
-            print(f"Error: File '{file_path}' not found.")
-        except Exception as e:
+                merged_content.append(content)
+        except (FileNotFoundError, Exception) as e:
             print(f"An error occurred while reading '{file_path}': {e}")
-    return merged_content
+    return ''.join(merged_content)
 
-def generate_output_file_name(file_paths):
+def generate_output_file_name(file_paths, merge_accents):
     # Extract filenames without extension
-    base_names = [os.path.splitext(os.path.basename(fp))[0] for fp in file_paths]
+    base_names = [Path(fp).stem for fp in file_paths]
+
     # Concatenate filenames
     combined_name = "_".join(base_names)
+
     # Return the formatted output file name
-    return f"Letter_Frequency_{combined_name}.txt"
+    return f"{combined_name}{'_normalized' if merge_accents else ''}.txt"
 
 def letter_frequency(file_paths, merge_accents):
     # Start the timer
@@ -66,10 +67,10 @@ def letter_frequency(file_paths, merge_accents):
         ]
 
         # Determine output file name based on combined input filenames
-        output_file_name = generate_output_file_name(file_paths)
+        output_file_name = generate_output_file_name(file_paths, merge_accents)
 
         # Specify the output directory relative to the current working directory
-        output_directory = os.path.join(os.getcwd(), 'output_py')
+        output_directory = os.path.join(os.getcwd(), 'output')
 
         # Ensure the output directory exists, create if not
         if not os.path.exists(output_directory):
