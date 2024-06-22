@@ -7,10 +7,10 @@ def generate_random_file(file_size_mb, include_all_ascii):
     
     if include_all_ascii:
         ascii_chars = string.ascii_letters + string.digits + string.punctuation + ' '
-        file_name = 'random_letters_all.txt'
+        file_name = 'random_letters_all_' + str(int(file_size_mb)) + 'MB.txt'
     else:
         ascii_chars = string.ascii_letters
-        file_name = 'random_letters.txt'
+        file_name = 'random_letters_' + str(int(file_size_mb)) + 'MB.txt'
     
     
 
@@ -19,6 +19,13 @@ def generate_random_file(file_size_mb, include_all_ascii):
         while bytes_written < file_size:
             # Generate a random string of variable length (limited to not exceed remaining file size)
             random_string = ''.join(random.choice(ascii_chars) for _ in range(min(1024, file_size - bytes_written)))
+            # add random '\n' character to the end of the string (to simulate text file with multiple lines)
+            
+            for i in range(0, len(random_string), 150):
+                file.write(random_string[i:i+80] + '\n')
+
+            
+            
             file.write(random_string)
             bytes_written += len(random_string)
 
