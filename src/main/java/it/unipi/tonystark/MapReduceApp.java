@@ -40,6 +40,7 @@ public class MapReduceApp {
     private static final int NORMALIZE_INDEX = 2;
     private static final int INPUT_PATH_INDEX = 3;
     private static final int MIN_ARGS_LENGTH = 6;
+    
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException, KeyValueException {
         Configuration conf = new Configuration();
         String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
@@ -130,9 +131,11 @@ public class MapReduceApp {
 
         return job;
     }
+    
     private static void setNumReducers(Job job, String numReducers) {
         job.setNumReduceTasks(Integer.parseInt(numReducers));
     }
+
     public static long getLetterCount(Configuration conf, String path) throws IOException, KeyValueException {
 
         // Read the output of the first job
@@ -199,6 +202,7 @@ public class MapReduceApp {
 
         return map;
     }
+
     public static boolean checkParameters(String[] args, Configuration conf) {
         if (args.length < MIN_ARGS_LENGTH) {
             System.err.println("Usage: MapReduceApp <type> <numReducers> <normalize> [<input>...] <output1> <output2>");

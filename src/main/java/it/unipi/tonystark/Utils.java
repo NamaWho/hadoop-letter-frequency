@@ -4,6 +4,12 @@ import java.text.Normalizer;
 
 public class Utils {
 
+    /**
+     * Filter the characters from the input text
+     * @param inputStr the input text
+     * @param normalize a boolean to normalize the input text
+     * @return the filtered text
+     */
     public static String filterCharacters(String inputStr, boolean normalize) {
         if (inputStr == null || inputStr.isEmpty()) {
             return "";
