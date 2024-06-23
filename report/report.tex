@@ -1,0 +1,71 @@
+\documentclass[a4paper, 12pt]{article}
+
+% Useful packages
+\usepackage[utf8]{inputenc} % for handling accents
+\usepackage{amsmath} % for advanced math
+\usepackage{graphicx} % for handling images
+\usepackage[hidelinks]{hyperref} % for hyperlinks
+\usepackage{geometry} % for margin settings
+\usepackage{xcolor} % for custom colors
+\usepackage{titlesec} % for customizing section titles
+\usepackage{titling} % for custom title, subtitle, and organization
+
+% Margin settings
+\geometry{a4paper, margin=1.5cm}
+
+% Define custom colors
+\definecolor{sectioncolor}{RGB}{0, 51, 102} % darker blue
+\definecolor{subsectioncolor}{RGB}{0, 102, 102} % darker teal
+
+% Customize section, subsection, and subsubsection without numbers
+\titleformat{\section}
+  {\color{sectioncolor}\large\bfseries} % Color and size for \section
+  {}{0em}{} % Remove section number
+
+\titleformat{\subsection}
+  {\color{subsectioncolor}\normalsize\bfseries} % Color and size for \subsection
+  {}{0em}{} % Remove subsection number
+
+\titleformat{\subsubsection}
+  {\color{subsectioncolor}\small\bfseries} % Color and size for \subsubsection
+  {}{0em}{} % Remove subsubsection number
+
+
+
+\begin{document}
+
+\input{coverPage.tex}
+
+\tableofcontents
+\newpage
+% Abstract
+\begin{abstract}
+This report describes the project developed for the Cloud Computing exam at the University of Pisa. It covers the motivations, objectives, system architecture, technologies used, and results obtained.
+
+\end{abstract}
+
+
+\section{Introduction}
+
+
+
+\section{System Architecture}
+
+
+
+\section{Technologies Used}
+
+
+
+\section{Implementation}
+
+
+
+\section{Results}
+
+
+\section{Conclusions and Future Work}
+
+
+
+\end{document}
