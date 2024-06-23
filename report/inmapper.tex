@@ -5,8 +5,7 @@
     \Ensure Total count of each letter in the input file
     
     \Statex
-    \Class{CountMapper}
-    
+    \noindent \textbf{CountMapper}
         \State \textbf{private map} $\leftarrow$ \{\}
         
         \State \textbf{private normalize}
@@ -33,10 +32,12 @@
                 \State Emit($k$, $v$)
             \EndFor
         \EndProcedure
-    \EndClass
     
+        \vspace{1em}
+
     \Statex
-    \Class{CountReducer}
+    \noindent \textbf{CountReducer}
+
     
         \Procedure{Reduce}{Text key, Iterable$<$LongWritable$>$ values}
             \State sum $\leftarrow$ 0
@@ -45,7 +46,7 @@
             \EndFor
             \State Emit(key, sum)
         \EndProcedure
-    \EndClass
+
     \end{algorithmic}
     \end{algorithm}
     
@@ -55,8 +56,10 @@
     \Require Txt file, Total number of characters in the txt file
     \Ensure Frequency of each letter in the input file
     
+    \vspace{1em}
+
     \Statex
-    \Class{CountMapper}
+    \noindent \textbf{CountMapper}
         \State \textbf{private map} $\leftarrow$ \{\}
         \State \textbf{private normalize}
     
@@ -82,10 +85,11 @@
                 \State Emit($k$, $v$)
             \EndFor
         \EndProcedure
-    \EndClass
     
+        \vspace{1em}
+
     \Statex
-    \Class{CountReducer}
+    \noindent \textbf{CountReducer}
         \State \textbf{private letterCount}
     
         \Procedure{Setup}{Context context}
@@ -100,7 +104,7 @@
             \State freq $\leftarrow$ (double) sum / (double) \textbf{letterCount}
             \State Emit(key, freq)
         \EndProcedure
-    \EndClass
+
     \end{algorithmic}
     \end{algorithm}
     

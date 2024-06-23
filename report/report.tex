@@ -85,14 +85,14 @@ Executing the MapReduce workflow with different inputs, and configurations:
 \subsection{Performance Evaluation}
 
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{media/performance/opera_df_describe.png}
   \caption{Statics' insights on Operas}
   \label{fig:OperaInsights}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{media/performance/opera_df_describe.png}
   \caption{Statics' insights on Test}
@@ -100,65 +100,73 @@ Executing the MapReduce workflow with different inputs, and configurations:
 \end{figure}
 
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_opera.png}
   \caption{Total time for each opera with different reducers}
   \label{fig:TimeOperas}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_opera(TEST).png}
   \caption{Total time for Test with different reducers}
   \label{fig:TimeTest}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_job.png}
   \caption{Total time for each job with different operas}
   \label{fig:TimeJob}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_job(TEST).png}
   \caption{Total time for each job with Test}
   \label{fig:TimeJobTest}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/TotalTimeMapReduce.png}
   \caption{TotalTimeMapReduce}
   \label{fig:TotalTimeMapReduce}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/CpuTIME.png}
-  \caption{CpuTime}
+  \caption{Cpu Time}
   \label{fig:CpuTIME}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/PeakMapMemory.png}
-  \caption{PeakMapMemory}
+  \caption{Peak Map Memory}
   \label{fig:PeakMapMemory}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/PeakReduceMemory.png}
-  \caption{PeakReduceMemory}
+  \caption{Peak Reduce Memory}
   \label{fig:PeakReduceMemory}
 \end{figure}
 
-
+\newpage
 \section{Conclusions}
+The conducted experiments demonstrate the effectiveness of both the Combiner and In-Mapper Combiner approaches in optimizing MapReduce performance. Several key findings emerged from the analysis:
 
+\begin{itemize}
+\item \textbf{Impact of Input Size}: Larger input sizes, such as the 800 MB test file, significantly increased the total processing time. This effect was evident across both the Combiner and In-Mapper Combiner implementations, although the In-Mapper Combiner consistently showed better performance due to reduced data shuffling.
+\item \textbf{Number of Reducers}: Increasing the number of reducers generally decreased the total processing time for the letter frequency job. This is attributed to the parallel processing capabilities of Hadoop, which effectively distributes the workload across multiple reducers.
+\item \textbf{Memory Usage}: The In-Mapper Combiner approach showed a higher peak in memory usage for both map and reduce tasks compared to the Combiner. This is expected as the In-Mapper Combiner holds intermediate results in memory.
+\item \textbf{CPU Time}: The CPU time for the In-Mapper Combiner approach was slightly higher due to the additional overhead of managing intermediate data structures within the mapper. However, the reduced data shuffling led to an overall decrease in total processing time.
+\end{itemize}
 
+\noindent In conclusion, the experiments validate the efficiency of using combiners in optimizing MapReduce tasks. The In-Mapper Combiner approach, despite its higher memory usage, consistently outperformed the traditional Combiner method by reducing the volume of intermediate data and minimizing data transfer overhead. 
 
 \end{document}
