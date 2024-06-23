@@ -10,7 +10,10 @@
 \usepackage{titlesec} % for customizing section titles
 \usepackage{titling} % for custom title, subtitle, and organization
 \usepackage{algorithm} % for pseudocode
+\usepackage{algorithmicx}
 \usepackage{algpseudocode} % for pseudocode
+\usepackage{amsfonts}
+\usepackage{float} % for H float specifier
 
 % Margin settings
 \geometry{a4paper, margin=1.5cm}
@@ -32,10 +35,7 @@
   {\color{subsectioncolor}\small\bfseries} % Color and size for \subsubsection
   {}{0em}{} % Remove subsubsection number
 
-
-
 \begin{document}
-
 \input{coverPage.tex}
 
 \tableofcontents
@@ -47,24 +47,23 @@
 
 \end{abstract}
 
-
 \section{Introduction}
-
 The objective of this project is to implement a data processing pipeline that can handle substantial data sets, ensuring efficient computation and meaningful data insights. By exploiting the MapReduce paradigm, data processing tasks is split into two main functions: the Mapper and the Reducer. The Mapper function processes and filters the input data, emitting key-value pairs, while the Reducer function aggregates and processes these pairs to produce the final output.\\
 The project was developed using the Hadoop framework, which provides an open-source implementation of the MapReduce paradigm. Hadoop allows for the distributed processing of large data sets across clusters of computers using simple programming models. The Hadoop ecosystem also includes other tools, such as HDFS (Hadoop Distributed File System) for distributed storage, and YARN (Yet Another Resource Negotiator) for cluster resource management.\\
-
 \noindent Given a text document as input, it is aimed to extract the frequency of each letter composing such document. In Order to achieve this, two differnt jobs are required: the first job is responsible for counting the number of letters in the document, while the second job is responsible for evaluating the frequency of each letter.\\
 
-
-
-
-
 \section{Algorithm Design}
-In order to reduce the amount of data to be transfered to the reducer (or reducers) two different strategies are used:
-\begin{itemize}
-  \item \textbf{Combiner}: a combiner is mini-reducer that aggregates the output of the mapper before sending it to the reducer. It performs its operations on the same node where the mapper is running.
-  \item \textbf{In-Mapping combiner}: this is a design pattern that allows to perform some aggregation inside the mapper itself. In details, it performs the combiner operation directly in the mapper, before emitting the key-value pair.
-\end{itemize}
+The objective of this project is to analyze letter frequency in text documents utilizing Hadoop's MapReduce framework. Specifically, two distinct approaches were implemented to optimize the MapReduce task: the use of a Combiner and the implementation of an In-Mapper Combiner. These methods aim to enhance the efficiency of the MapReduce process by reducing the amount of data transferred between the Mapper and Reducer stages.
+
+
+\subsection{MapReduce with Combiner}
+The Combiner is a mini-reducer that processes the output of the Mapper tasks before passing it to the Reducer. By aggregating the intermediate data locally on the mapper nodes, the Combiner reduces the volume of data shuffled across the network, thus improving the performance of the MapReduce job. It performs its operations on the same node where the mapper is running.
+\subsubsection{Pseudocode}
+\input{combiner}
+\subsection{MapReduce with In-Mapper Combiner}
+The In-Mapper Combiner combines the mapping and combining steps within the Mapper itself. This method involves accumulating the results in a data structure within the Mapper, which is then emitted at the end of the mapping phase. This approach minimizes the overhead of multiple data passes by efficiently combining intermediate results within the Mapper, reducing the need for external Combiner steps and further optimizing network usage and processing time.
+\subsubsection{Pseudocode}
+\input{inmapper}
 
 \section{Results}
 

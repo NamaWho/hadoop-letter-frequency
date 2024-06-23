@@ -1,0 +1,82 @@
+\begin{algorithm}[H]
+    \caption{Letter Count with Combiner}
+    \begin{algorithmic}[1]
+    \Require Txt file
+    \Ensure Total count of each letter in the input file
+    
+    \Statex
+    \Class{Mapper}
+        \Procedure{Setup}{context}
+            \State normalize $\leftarrow$ context.getConfiguration().get("normalize")
+        \EndProcedure
+    
+        \Procedure{Map}{Object key, Text value}
+            \State line $\leftarrow$ Normalize(value.toString(), normalize) \Comment{Remove accents and set lowercase}
+            \For{each character $c$ in line}
+                \State EmitIntermediate(LETTER\_COUNT\_KEY, 1)
+            \EndFor
+        \EndProcedure
+    \EndClass
+    
+    \Statex
+    \Class{Combiner \& Reducer}
+        \Procedure{Reduce}{Text key, Iterable$<$LongWritable$>$ values}
+            \State sum $\leftarrow$ 0
+            \For{each LongWritable val in values}
+                \State sum $\leftarrow$ sum + val.get()
+            \EndFor
+            \State Emit(key, new LongWritable(sum))
+        \EndProcedure
+    \EndClass
+    \end{algorithmic}
+    \end{algorithm}
+    
+    \begin{algorithm}[H]
+    \caption{Letter Frequency with Combiner}
+    \begin{algorithmic}[1]
+    \Require Txt file, Total number of characters in the txt file
+    \Ensure Frequency of each letter in the input file
+    
+    \Statex
+    \Class{Mapper}
+        \Procedure{Setup}{context}
+            \State normalize $\leftarrow$ context.getConfiguration().get("normalize")
+        \EndProcedure
+    
+        \Procedure{Map}{Object key, Text value}
+            \State line $\leftarrow$ Normalize(value.toString(), normalize) \Comment{Remove accents and set lowercase}
+            \For{each character $c$ in line}
+                \State EmitIntermediate(String.valueOf($c$), 1)
+            \EndFor
+        \EndProcedure
+    \EndClass
+    
+    \Statex
+    \Class{Combiner}
+        \Procedure{Reduce}{Text key, Iterable$<$LongWritable$>$ values}
+            \State sum $\leftarrow$ 0
+            \For{each LongWritable val in values}
+                \State sum $\leftarrow$ sum + val.get()
+            \EndFor
+            \State Emit(key, new LongWritable(sum))
+        \EndProcedure
+    \EndClass
+    
+    \Statex
+    \Class{Reducer}
+        \Procedure{Setup}{context}
+            \State letterCount $\leftarrow$ context.getConfiguration().getLong("letterCountValue", 1)
+        \EndProcedure
+    
+        \Procedure{Reduce}{Text key, Iterable$<$LongWritable$>$ values}
+            \State sum $\leftarrow$ 0
+            \For{each LongWritable val in values}
+                \State sum $\leftarrow$ sum + val.get()
+            \EndFor
+            \State freq $\leftarrow$ (double) sum / (double) letterCount
+            \State Emit(key, new DoubleWritable(freq))
+        \EndProcedure
+    \EndClass
+    \end{algorithmic}
+    \end{algorithm}
+    
