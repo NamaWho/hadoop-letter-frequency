@@ -16,17 +16,32 @@ import java.util.Map;
 import static it.unipi.tonystark.MapReduceApp.getLetterCount;
 
 public class LetterFrequency {
+
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
 
-        //define the associative array used to perform in mapping combinig
+        // Associative array used to perform in mapping combining
         private static Map<String, Long> map;
         private Boolean normalize;
+
+        /**
+         * Setup method to get the normalize parameter from the configuration
+         * @param context the context of the job
+         */
         @Override
         public void setup(Context context) {
 
             map = new HashMap<>();
             normalize = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
         }
+
+        /**
+         * Map method to count the number of letters in the input text
+         * @param key the key of the input text
+         * @param value the value of the input text
+         * @param context the context of the job
+         * @throws IOException
+         * @throws InterruptedException
+         */
         @Override
         public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
@@ -45,6 +60,13 @@ public class LetterFrequency {
                     map.put(String.valueOf(c), 1L);
             }
         }
+
+        /**
+         * Cleanup method to emit the key-value pairs
+         * @param context the context of the job
+         * @throws IOException
+         * @throws InterruptedException
+         */
         @Override
         public void cleanup(Context context) throws IOException, InterruptedException {
 
@@ -57,11 +79,26 @@ public class LetterFrequency {
     }
 
     public static class CountReducer extends Reducer<Text, LongWritable, Text, DoubleWritable> {
+        // Total number of letters
         private long letterCount;
+
+        /**
+         * Setup method to get the letter count from the configuration
+         * @param context the context of the job
+         * @throws IOException
+         */
         public void setup(Context context) throws IOException {
             letterCount = context.getConfiguration().getLong(MapReduceApp.getLETTER_COUNT_VALUE_PARAM_NAME(), 1);
         }
 
+        /**
+         * Reduce method to calculate the frequency of each letter
+         * @param key the key of the input
+         * @param values the values of the input
+         * @param context the context of the job
+         * @throws IOException
+         * @throws InterruptedException
+         */
         @Override
         public void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
 
