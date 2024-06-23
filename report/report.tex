@@ -60,7 +60,11 @@ The project was developed using the Hadoop framework, which provides an open-sou
 
 
 \section{Algorithm Design}
-
+In order to reduce the amount of data to be transfered to the reducer (or reducers) two different strategies are used:
+\begin{itemize}
+  \item \textbf{Combiner}: a combiner is mini-reducer that aggregates the output of the mapper before sending it to the reducer. It performs its operations on the same node where the mapper is running.
+  \item \textbf{In-Mapping combiner}: this is a design pattern that allows to perform some aggregation inside the mapper itself. In details, it performs the combiner operation directly in the mapper, before emitting the key-value pair.
+\end{itemize}
 
 \section{Results}
 
