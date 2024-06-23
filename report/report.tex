@@ -16,7 +16,7 @@
 \usepackage{float} % for H float specifier
 
 % Margin settings
-\geometry{a4paper, margin=1.8cm}
+\geometry{a4paper, margin=2cm}
 
 % Define custom colors
 \definecolor{sectioncolor}{RGB}{0, 51, 102} % darker blue
@@ -36,137 +36,14 @@
   {}{0em}{} % Remove subsubsection number
 
 \begin{document}
-\input{coverPage.tex}
+\input{sections/coverPage.tex}
 
 \tableofcontents
-\newpage
-\section{Introduction}
-The objective of this project is to implement a data processing pipeline that can handle substantial data sets, ensuring efficient computation and meaningful data insights. By exploiting the MapReduce paradigm, data processing tasks is split into two main functions: the \textbf{Mapper} and the \textbf{Reducer}.\newline
-The Mapper function processes and filters the input data, emitting \textbf{key-value pairs}, while the Reducer function aggregates and processes these pairs to produce the final output.\\
 
-\noindent The project was developed using the Hadoop framework, which provides an open-source implementation of the MapReduce paradigm. Hadoop allows for the distributed processing of large data sets across clusters of computers using simple programming models. The Hadoop ecosystem also includes other tools, such as HDFS (Hadoop Distributed File System) for distributed storage, and YARN (Yet Another Resource Negotiator) for cluster resource management.\newline
+\input{sections/Introduction.tex}
+\input{sections/AlgorithmDesign.tex}
+\input{sections/Results.tex}
+\input{sections/Conclusions.tex}
 
-\noindent Given a text document as input, it is aimed to extract the frequency of each letter composing such document. In Order to achieve this, two differnt jobs are required: the first job is responsible for counting the number of letters in the document, while the second job is responsible for evaluating the frequency of each letter. Finally, the results obtained from the processing pipeline will be shown.
-
-
-
-\section{Algorithm Design}
-The objective of this project is to analyze letter frequency in text documents utilizing Hadoop's MapReduce framework. Specifically, two distinct approaches were implemented to optimize the MapReduce task: the use of a Combiner and the implementation of an In-Mapper Combiner. These methods aim to enhance the efficiency of the MapReduce process by reducing the amount of data transferred between the Mapper and Reducer stages.
-
-\subsection{MapReduce with Combiner}
-The Combiner is a mini-reducer that processes the output of the Mapper tasks before passing it to the Reducer. By aggregating the intermediate data locally on the mapper nodes, the Combiner reduces the volume of data shuffled across the network, thus improving the performance of the MapReduce job. It performs its operations on the same node where the mapper is running.
-\subsubsection{Pseudocode}
-\input{combiner}
-\subsection{MapReduce with In-Mapper Combiner}
-The In-Mapper Combiner combines the mapping and combining steps within the Mapper itself. This method involves accumulating the results in a data structure within the Mapper, which is then emitted at the end of the mapping phase. This approach minimizes the overhead of multiple data passes by efficiently combining intermediate results within the Mapper, reducing the need for external Combiner steps and further optimizing network usage and processing time.
-\subsubsection{Pseudocode}
-\input{inmapper}
-
-
-\section{Results}
-
-\subsection{Experimental Setup}
-Executing the MapReduce workflow with different inputs, and configurations:
-\begin{itemize}
-  \item \textbf{Input size}: the size of the input file is varied to evaluate the performance of the MapReduce workflow.
-        \begin{itemize}
-          \item \textbf{Paradise Lost} $\sim$ 310 kb
-          \item \textbf{Moby Dick} $\sim$ 421kb
-          \item \textbf{Frankenstein} $\sim$ 440 kb
-          \item \textbf{Divina Commedia} $\sim$ 600 kb
-          \item \textbf{Gerusalemme Liberata} $\sim$ 691 kb
-          \item \textbf{Promessi Sposi} $\sim$ 1.440 kb
-          \item \textbf{Test file} (random generated sequence of char) of $\sim$ 800 Mb.
-        \end{itemize}
-  \item \textbf{Number of mappers}: Hadoop handles this step
-  \item \textbf{Number of reducers}: From one up to three reducers are used for letter frequency
-\end{itemize}
-
-\subsection{Performance Evaluation}
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{media/performance/opera_df_describe.png}
-  \caption{Statics' insights on Operas}
-  \label{fig:OperaInsights}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{media/performance/opera_df_describe.png}
-  \caption{Statics' insights on Test}
-  \label{fig:OperaInsightsTEST}
-\end{figure}
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_opera.png}
-  \caption{Total time for each opera with different reducers}
-  \label{fig:TimeOperas}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_opera(TEST).png}
-  \caption{Total time for Test with different reducers}
-  \label{fig:TimeTest}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_job.png}
-  \caption{Total time for each job with different operas}
-  \label{fig:TimeJob}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_job(TEST).png}
-  \caption{Total time for each job with Test}
-  \label{fig:TimeJobTest}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/TotalTimeMapReduce.png}
-  \caption{TotalTimeMapReduce}
-  \label{fig:TotalTimeMapReduce}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/CpuTIME.png}
-  \caption{Cpu Time}
-  \label{fig:CpuTIME}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/PeakMapMemory.png}
-  \caption{Peak Map Memory}
-  \label{fig:PeakMapMemory}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/PeakReduceMemory.png}
-  \caption{Peak Reduce Memory}
-  \label{fig:PeakReduceMemory}
-\end{figure}
-
-\newpage
-\section{Conclusions}
-The conducted experiments demonstrate the effectiveness of both the Combiner and In-Mapper Combiner approaches in optimizing MapReduce performance. Several key findings emerged from the analysis:
-
-\begin{itemize}
-\item \textbf{Impact of Input Size}: Larger input sizes, such as the 800 MB test file, significantly increased the total processing time. This effect was evident across both the Combiner and In-Mapper Combiner implementations, although the In-Mapper Combiner consistently showed better performance due to reduced data shuffling.
-\item \textbf{Number of Reducers}: Increasing the number of reducers generally decreased the total processing time for the letter frequency job. This is attributed to the parallel processing capabilities of Hadoop, which effectively distributes the workload across multiple reducers.
-\item \textbf{Memory Usage}: The In-Mapper Combiner approach showed a higher peak in memory usage for both map and reduce tasks compared to the Combiner. This is expected as the In-Mapper Combiner holds intermediate results in memory.
-\item \textbf{CPU Time}: The CPU time for the In-Mapper Combiner approach was slightly higher due to the additional overhead of managing intermediate data structures within the mapper. However, the reduced data shuffling led to an overall decrease in total processing time.
-\end{itemize}
-
-\noindent In conclusion, the experiments validate the efficiency of using combiners in optimizing MapReduce tasks. The In-Mapper Combiner approach, despite its higher memory usage, consistently outperformed the traditional Combiner method by reducing the volume of intermediate data and minimizing data transfer overhead. 
 
 \end{document}
