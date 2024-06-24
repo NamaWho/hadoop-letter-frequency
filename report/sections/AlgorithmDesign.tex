@@ -6,6 +6,9 @@ The objective of this project is to analyze letter frequency in text documents u
 The Combiner is a mini-reducer that processes the output of the Mapper tasks before passing it to the Reducer. By aggregating the intermediate data locally on the mapper nodes, the Combiner reduces the volume of data shuffled across the network, thus improving the performance of the MapReduce job. It performs its operations on the same node where the mapper is running.
 \subsubsection{Pseudocode}
 \input{sections/pseudoCode/combiner.tex}
+
+\newpage
+
 \subsection{MapReduce with In-Mapper Combiner}
 The In-Mapper Combiner combines the mapping and combining steps within the Mapper itself. This method involves accumulating the results in a data structure within the Mapper, which is then emitted at the end of the mapping phase. This approach minimizes the overhead of multiple data passes by efficiently combining intermediate results within the Mapper, reducing the need for external Combiner steps and further optimizing network usage and processing time.
 \subsubsection{Pseudocode}

@@ -15,8 +15,8 @@ public class LetterCount {
      * Mapper class to count the number of letters in the input text
      */
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
-        private final static LongWritable one = new LongWritable(1);
-        private final static Text letterCountKey = new Text(MapReduceApp.getLETTER_COUNT_KEY());
+        private static LongWritable one;
+        private static Text letterCountKey;
         private Boolean normalize;
 
         /**
@@ -26,6 +26,10 @@ public class LetterCount {
         @Override
         public void setup(Context context) {
             normalize = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
+
+            one = new LongWritable(1);
+            letterCountKey = new Text("LetterCount");
+        
         }
 
         /**

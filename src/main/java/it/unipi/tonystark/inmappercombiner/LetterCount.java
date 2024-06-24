@@ -17,7 +17,7 @@ public class LetterCount {
      */
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
 
-        private final static Text letterCountKey = new Text(MapReduceApp.getLETTER_COUNT_KEY());
+        private static Text letterCountKey;
 
         // Associative array used to perform in mapping combinig
         private static Map<String, Long> map;
@@ -31,6 +31,9 @@ public class LetterCount {
         public void setup(Context context) {
             map = new HashMap<>();
             normalize = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
+
+            letterCountKey = new Text(MapReduceApp.getLETTER_COUNT_KEY());
+        
         }
 
         /**

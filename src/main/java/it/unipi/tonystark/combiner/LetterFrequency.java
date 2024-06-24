@@ -17,7 +17,7 @@ public class LetterFrequency {
 
     public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
 
-        private final static LongWritable one = new LongWritable(1);
+        private static LongWritable one;
         private Boolean normalized;
 
         /**
@@ -27,6 +27,9 @@ public class LetterFrequency {
         @Override
         public void setup(Context context) {
             normalized = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
+
+            one = new LongWritable(1);
+        
         }
 
         /**

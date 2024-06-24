@@ -4,32 +4,35 @@
     \Require Txt file
     \Ensure Total count of each letter in the input file
     
+    \vspace{1em}
+
     \Statex
     \noindent \textbf{CountMapper}
-        \State \textbf{private map} $\leftarrow$ \{\}
         
-        \State \textbf{private normalize}
-    
         \Procedure{Setup}{Context context}
-            \State \textbf{normalize} $\leftarrow$ context.getConfiguration().get("normalize")
+
+            \State normalize $\leftarrow$ context.getConfiguration().get("normalize")
+
+            \State map $\leftarrow$ \{\}
+
+            \State letterCountKey $\leftarrow$ new Text("total\_letter\_count")
+
         \EndProcedure
     
+        \vspace{1em}
+
         \Procedure{Map}{Object key, Text value}
-            \State line $\leftarrow$ Normalize(value.toString(), \textbf{normalize})
+            \State line $\leftarrow$ Normalize(value.toString(), normalize)
             \For{each character $c$ in line}
-                \If{$c$ is a letter}
-                    \If{\textbf{map} contains $c$}
-                        \State \textbf{map}[$c$] $\leftarrow$ \textbf{map}[$c$] + 1
-                    \Else
-                        \State \textbf{map}[$c$] $\leftarrow$ 1
-                    \EndIf
-                \EndIf
+                \State map\{{$letterCountKey$}\} $\leftarrow$ map\{{$letterCountKey$}\} + 1
             \EndFor
         \EndProcedure
     
+        \vspace{1em}
+
         \Procedure{Cleanup}{Context context}
-            \For{each entry $<k, v>$ in \textbf{map}}
-                \State Emit($k$, $v$)
+            \For{each entry $<k, v>$ in $map$}
+                \State Emit($k$, $v$) \Comment {Emint key and count map\{key\}}
             \EndFor
         \EndProcedure
     
@@ -60,28 +63,28 @@
 
     \Statex
     \noindent \textbf{CountMapper}
-        \State \textbf{private map} $\leftarrow$ \{\}
-        \State \textbf{private normalize}
-    
+        
         \Procedure{Setup}{Context context}
-            \State \textbf{normalize} $\leftarrow$ context.getConfiguration().get("normalize")
+            \State normalize $\leftarrow$ context.getConfiguration().get("normalize")
+        
+        \State map $\leftarrow$ \{\}
+        
         \EndProcedure
-    
+
+        \vspace{1em}
+
         \Procedure{Map}{Object key, Text value}
-            \State line $\leftarrow$ Normalize(value.toString(), \textbf{normalize})
+            \State line $\leftarrow$ Normalize(value.toString(), normalize)
             \For{each character $c$ in line}
-                \If{$c$ is a letter}
-                    \If{\textbf{map} contains $c$}
-                        \State \textbf{map}[$c$] $\leftarrow$ \textbf{map}[$c$] + 1
-                    \Else
-                        \State \textbf{map}[$c$] $\leftarrow$ 1
-                    \EndIf
-                \EndIf
+                \State map\{$c$\} $\leftarrow$ map\{$c$\} + 1
+            
             \EndFor
         \EndProcedure
-    
+
+        \vspace{1em}
+
         \Procedure{Cleanup}{Context context}
-            \For{each entry $<k, v>$ in \textbf{map}}
+            \For{each entry $<k, v>$ in $map$} \Comment {Emit key and count map\{key\}}
                 \State Emit($k$, $v$)
             \EndFor
         \EndProcedure
@@ -90,12 +93,13 @@
 
     \Statex
     \noindent \textbf{CountReducer}
-        \State \textbf{private letterCount}
-    
+        
         \Procedure{Setup}{Context context}
-            \State \textbf{letterCount} $\leftarrow$ context.getConfiguration().getLong("letterCountValue", 1)
+            \State letterCount $\leftarrow$ context.getConfiguration().getLong("letterCountValue", 1)
         \EndProcedure
-    
+
+        \vspace{1em}
+
         \Procedure{Reduce}{Text key, Iterable$<$LongWritable$>$ values}
             \State sum $\leftarrow$ 0
             \For{each value in values}

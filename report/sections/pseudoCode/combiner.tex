@@ -5,16 +5,21 @@
         \Ensure Total count of each letter in the input file
         
         \vspace{1em}
+
         \Statex
         \noindent \textbf{Mapper}
         \Procedure{Setup}{context}
         \State normalize $\leftarrow$ context.getConfiguration().get("normalize")
+        \State one $\leftarrow$ new LongWritable(1)
+        \State letterCountKey $\leftarrow$ new Text("total\_letter\_count") 
         \EndProcedure
+
+        \vspace{1em}
 
         \Procedure{Map}{Object key, Text value}
         \State line $\leftarrow$ Normalize(value.toString(), normalize) \Comment{Remove accents and set lowercase}
         \For{each character $c$ in line}
-        \State EmitIntermediate(LETTER\_COUNT\_KEY, 1)
+        \State Emit("total\_letter\_count", one)
         \EndFor
         \EndProcedure
 
@@ -40,16 +45,23 @@
         \Require Txt file, Total number of characters in the txt file
         \Ensure Frequency of each letter in the input file
 
+        \vspace{1em}
+
         \Statex
         \noindent \textbf{Mapper}
         \Procedure{Setup}{context}
         \State normalize $\leftarrow$ context.getConfiguration().get("normalize")
+
+        \State one $\leftarrow$ new LongWritable(1)
+
         \EndProcedure
+
+        \vspace{1em}
 
         \Procedure{Map}{Object key, Text value}
         \State line $\leftarrow$ Normalize(value.toString(), normalize) \Comment{Remove accents and set lowercase}
         \For{each character $c$ in line}
-        \State EmitIntermediate(String.valueOf($c$), 1)
+        \State Emit(String.valueOf($c$), one)
         \EndFor
         \EndProcedure
 
@@ -72,6 +84,8 @@
         \Procedure{Setup}{context}
         \State letterCount $\leftarrow$ context.getConfiguration().getLong("letterCountValue", 1)
         \EndProcedure
+
+        \vspace{1em}
 
         \Procedure{Reduce}{Text key, Iterable$<$LongWritable$>$ values}
         \State sum $\leftarrow$ 0
