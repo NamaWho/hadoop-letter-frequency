@@ -1,11 +1,16 @@
 \newpage
 \section{Conclusions}
-The conducted experiments demonstrate the effectiveness of both the Combiner and In-Mapper Combiner approaches in optimizing MapReduce performance. Several key findings emerged from the analysis:
+
+\subsection{Performance}
+
+The performance evaluation of the letter frequency job and letter count job shows the impact of input size and number of reducers. Moreover, the comparison between the Combiner and In-Mapper Combiner implementations highlights the better performances obtained by using the \textit{In-Mapper Combining} design pattern.
 
 \begin{itemize}
-\item \textbf{Impact of Input Size}: Larger input sizes, such as the 800 MB test file, significantly increased the total processing time. This effect was evident across both the Combiner and In-Mapper Combiner implementations, although the In-Mapper Combiner consistently showed better performance due to reduced data shuffling.
-\item \textbf{Number of Reducers}: Increasing the number of reducers generally decreased the total processing time for the letter frequency job. This is attributed to the parallel processing capabilities of Hadoop, which effectively distributes the workload across multiple reducers.
+\item \textbf{Impact of Input Size}: Larger input sizes, such as the 800 MB test file, grater the total processing time. This effect is evident across both the Combiner and In-Mapper Combiner implementations.
+\item \textbf{Number of Reducers}: It is shown that increasing the number of reducers do not lead to an overall significant improvement. This is due to the overhead of managing multiple reducers and the limited amount of data to process. In most cases, the performance is optimal with just two reducers.
+\item 
 \item \textbf{Memory Usage}: The In-Mapper Combiner approach showed a higher peak in memory usage for both map and reduce tasks compared to the Combiner. This is expected as the In-Mapper Combiner holds intermediate results in memory.
+
 \item \textbf{CPU Time}: The CPU time for the In-Mapper Combiner approach was slightly higher due to the additional overhead of managing intermediate data structures within the mapper. However, the reduced data shuffling led to an overall decrease in total processing time.
 \end{itemize}
 

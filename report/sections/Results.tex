@@ -17,50 +17,8 @@ Executing the MapReduce workflow with different inputs, and configurations:
   \item \textbf{Number of reducers}: From one up to three reducers are used for letter frequency
 \end{itemize}
 
-\subsection{Performance Evaluation}
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{media/performance/opera_df_describe.png}
-  \caption{Statics' insights on Operas}
-  \label{fig:OperaInsights}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{media/performance/opera_df_describe.png}
-  \caption{Statics' insights on Test}
-  \label{fig:OperaInsightsTEST}
-\end{figure}
-
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_opera.png}
-  \caption{Total time for each opera with different reducers}
-  \label{fig:TimeOperas}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_opera(TEST).png}
-  \caption{Total time for Test with different reducers}
-  \label{fig:TimeTest}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_job.png}
-  \caption{Total time for each job with different operas}
-  \label{fig:TimeJob}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\textwidth]{media/performance/total_time_S_per_job(TEST).png}
-  \caption{Total time for each job with Test}
-  \label{fig:TimeJobTest}
-\end{figure}
-
+\subsection{Performance Analysis}
+  
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{media/performance/TotalTimeMapReduce.png}
@@ -89,7 +47,55 @@ Executing the MapReduce workflow with different inputs, and configurations:
   \label{fig:PeakReduceMemory}
 \end{figure}
 
-\subsection{Local Python script comparison}
-As expected, the execution of a local Python script showed excellent performance with small text sizes. In these cases, the absence of the map and reduce phases, typical of the Hadoop framework, proved advantageous. For smaller files, these phases can even be counterproductive, increasing execution time due to the overhead introduced by the distribution and management of tasks among the cluster nodes.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{media/performance/performance_LetterCount.png}
+  \caption{Performance Letter Count}
+\end{figure}
 
-\noindent However, for large files, Hadoop demonstrated significantly better performance compared to the local Python script. Hadoop's ability to distribute the workload across multiple cluster nodes and efficiently manage large volumes of data resulted in reduced execution times even for substantial datasets, confirming its effectiveness in handling big data.
+\newpage
+
+\subsection{Letter Frequency Analysis}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{media/qualitative analysis/letter_freq_dist.png}
+  \caption{Letter Frequency Distribution}
+  \label{fig:letter_freq_dist}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{media/qualitative analysis/letter_freq_dist_opera.png}
+  \caption{Letter Frequency Distribution for different Operas}
+  \label{fig:letter_freq_dist_opera}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{media/qualitative analysis/letter_freq_dist_lang.png}
+  \caption{Letter Frequency Distribution for italian and english}
+  \label{fig:letter_freq_dist_lang}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{media/qualitative analysis/letter_freq_dist_lang_en.png}
+  \caption{Letter Frequency Distribution for english}
+  \label{fig:letter_freq_dist_lang_en}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{media/qualitative analysis/letter_freq_dist_lang_it.png}
+  \caption{Letter Frequency Distribution for italian}
+  \label{fig:letter_freq_dist_lang_it}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{media/qualitative analysis/top_5_letters.png}
+  \caption{Top 5 letters}
+  \label{fig:top_5_letters}
+\end{figure}
+
