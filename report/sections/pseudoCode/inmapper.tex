@@ -7,7 +7,7 @@
     \vspace{1em}
 
     \Statex
-    \noindent \textbf{CountMapper}
+    \noindent \textbf{Mapper}
         
         \Procedure{Setup}{Context context}
 
@@ -39,7 +39,7 @@
         \vspace{1em}
 
     \Statex
-    \noindent \textbf{CountReducer}
+    \noindent \textbf{Reducer}
 
     
         \Procedure{Reduce}{Text key, Iterable$<$LongWritable$>$ values}
@@ -47,7 +47,7 @@
             \For{each value in values}
                 \State sum $\leftarrow$ sum + value
             \EndFor
-            \State Emit(key, sum)
+            \State Emit(key, new LongWritable(sum))
         \EndProcedure
 
     \end{algorithmic}
@@ -62,7 +62,7 @@
     \vspace{1em}
 
     \Statex
-    \noindent \textbf{CountMapper}
+    \noindent \textbf{Mapper}
         
         \Procedure{Setup}{Context context}
             \State normalize $\leftarrow$ context.getConfiguration().get("normalize")
@@ -92,7 +92,7 @@
         \vspace{1em}
 
     \Statex
-    \noindent \textbf{CountReducer}
+    \noindent \textbf{Reducer}
         
         \Procedure{Setup}{Context context}
             \State letterCount $\leftarrow$ context.getConfiguration().getLong("letterCountValue", 1)
@@ -106,7 +106,7 @@
                 \State sum $\leftarrow$ sum + value
             \EndFor
             \State freq $\leftarrow$ (double) sum / (double) \textbf{letterCount}
-            \State Emit(key, freq)
+            \State Emit(key, new DoubleWritable(freq))
         \EndProcedure
 
     \end{algorithmic}

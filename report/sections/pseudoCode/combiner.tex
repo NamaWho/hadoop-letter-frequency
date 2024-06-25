@@ -19,7 +19,7 @@
         \Procedure{Map}{Object key, Text value}
         \State line $\leftarrow$ Normalize(value.toString(), normalize) \Comment{Remove accents and set lowercase}
         \For{each character $c$ in line}
-        \State Emit("total\_letter\_count", one)
+        \State Emit(letterCountKey, one)
         \EndFor
         \EndProcedure
 
@@ -61,7 +61,7 @@
         \Procedure{Map}{Object key, Text value}
         \State line $\leftarrow$ Normalize(value.toString(), normalize) \Comment{Remove accents and set lowercase}
         \For{each character $c$ in line}
-        \State Emit(String.valueOf($c$), one)
+        \State Emit(new Text($c$), one)
         \EndFor
         \EndProcedure
 
