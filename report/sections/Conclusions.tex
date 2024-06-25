@@ -6,7 +6,7 @@
 The performances of the letter frequency job and letter count one show the impact of input size and number of reducers. Moreover, the comparison between the Combiner and In-Mapper Combiner implementations highlights the better performances obtained by using the \textit{In-Mapper Combining} design pattern.
 
 \begin{itemize}
-\item \textbf{Impact of Input Size}: larger input sizes, such as the 800 MB test file, grater the total processing time. This effect is evident across both the Combiner and In-Mapper Combiner implementations.
+\item \textbf{Impact of Input Size}: larger input sizes, such as the 800 MB test file, greater is the total processing time. This effect is evident across both the Combiner and In-Mapper Combiner implementations.
 \item \textbf{Number of Reducers}: it is shown that increasing the number of reducers do not lead to an overall significant improvement. This is due to the overhead of managing multiple reducers and the limited amount of data to process. In most cases, the performance is optimal with just two reducers.
 
 \item \textbf{Combiner vs In-Mapper Combiner}: the In-Mapper Combiner approach consistently outperforms the traditional Combiner method. The In-Mapper Combiner design pattern reduces the volume of intermediate data and minimizes data transfer overhead, leading to a more efficient MapReduce workflow.
