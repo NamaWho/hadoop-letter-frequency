@@ -54,10 +54,10 @@ public class LetterCount {
 
             for(Character c: line.toCharArray()) {
                 // H{t} = H{t} + 1
-                if(map.containsKey(new Text(String.valueOf(c)))) {
-                    map.put(new Text(String.valueOf(c)), new LongWritable(map.get(new Text(String.valueOf(c))).get() + 1));
+                if(map.containsKey(letterCountKey)) {
+                    map.put(letterCountKey, new LongWritable(map.get(letterCountKey).get() + 1));
                 } else {
-                    map.put(new Text(String.valueOf(c)), new LongWritable(1));
+                    map.put(letterCountKey, new LongWritable(1));
                 }
             }
         }
