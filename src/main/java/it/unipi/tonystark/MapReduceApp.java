@@ -106,13 +106,13 @@ public class MapReduceApp {
 
         job.setJarByClass(Class.forName(packagePath + ".LetterFrequency"));
 
-        job.setMapperClass((Class<Mapper>) Class.forName(packagePath + ".LetterFrequency$CountMapper"));
+        job.setMapperClass((Class<Mapper>) Class.forName(packagePath + ".LetterFrequency$FreqMapper"));
 
         if (args[JOB_TYPE_INDEX].equals("combiner")) {
-            job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountCombiner"));
+            job.setCombinerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$FreqCombiner"));
         }
 
-        job.setReducerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$CountReducer"));
+        job.setReducerClass((Class<Reducer>) Class.forName(packagePath + ".LetterFrequency$FreqReducer"));
 
 
         job.setMapOutputKeyClass(Text.class);

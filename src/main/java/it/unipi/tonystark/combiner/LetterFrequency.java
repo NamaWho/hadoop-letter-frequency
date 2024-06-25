@@ -2,7 +2,6 @@ package it.unipi.tonystark.combiner;
 
 import it.unipi.tonystark.MapReduceApp;
 import it.unipi.tonystark.Utils;
-import it.unipi.tonystark.exception.KeyValueException;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -11,11 +10,9 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-import static it.unipi.tonystark.MapReduceApp.getLetterCount;
-
 public class LetterFrequency {
 
-    public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
+    public static class FreqMapper extends Mapper<Object, Text, Text, LongWritable> {
 
         private static LongWritable one;
         private Boolean normalized;
@@ -54,7 +51,7 @@ public class LetterFrequency {
         }
     }
 
-    public static class CountCombiner extends Reducer<Text, LongWritable, Text, LongWritable>
+    public static class FreqCombiner extends Reducer<Text, LongWritable, Text, LongWritable>
     {
         @Override
         public void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException
@@ -67,7 +64,7 @@ public class LetterFrequency {
         }
     }
 
-    public static class CountReducer extends Reducer<Text, LongWritable, Text, DoubleWritable> {
+    public static class FreqReducer extends Reducer<Text, LongWritable, Text, DoubleWritable> {
         private long letterCount;
 
         /**

@@ -20,7 +20,7 @@ public class LetterCount {
         private static Text letterCountKey;
 
         // Associative array used to perform in mapping combinig
-        private static Map<String, Long> map;
+        private static Map<Text, LongWritable> map;
         private Boolean normalize;
 
         /**
@@ -54,12 +54,11 @@ public class LetterCount {
 
             for(Character c: line.toCharArray()) {
                 // H{t} = H{t} + 1
-                if(map.containsKey(letterCountKey.toString())){
-                    long currentValue = map.get(letterCountKey.toString());
-                    map.put(letterCountKey.toString(), currentValue + 1);
+                if(map.containsKey(new Text(String.valueOf(c)))) {
+                    map.put(new Text(String.valueOf(c)), new LongWritable(map.get(new Text(String.valueOf(c))).get() + 1));
+                } else {
+                    map.put(new Text(String.valueOf(c)), new LongWritable(1));
                 }
-                else
-                    map.put(letterCountKey.toString(), 1L);
             }
         }
 
@@ -72,10 +71,8 @@ public class LetterCount {
         @Override
         public void cleanup(Context context) throws IOException, InterruptedException {
 
-            for (Map.Entry<String, Long> entry : map.entrySet()) {
-                String key = entry.getKey();
-                Long value = entry.getValue();
-                context.write(new Text(key), new LongWritable(value));
+            for(Map.Entry<Text, LongWritable> entry: map.entrySet()) {
+                context.write(entry.getKey(), entry.getValue());
             }
         }
     }

@@ -2,7 +2,6 @@ package it.unipi.tonystark.inmappercombiner;
 
 import it.unipi.tonystark.MapReduceApp;
 import it.unipi.tonystark.Utils;
-import it.unipi.tonystark.exception.KeyValueException;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -13,14 +12,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static it.unipi.tonystark.MapReduceApp.getLetterCount;
-
 public class LetterFrequency {
 
-    public static class CountMapper extends Mapper<Object, Text, Text, LongWritable> {
+    public static class FreqMapper extends Mapper<Object, Text, Text, LongWritable> {
 
         // Associative array used to perform in mapping combining
-        private static Map<String, Long> map;
+        private static Map<Text, LongWritable> map;
         private Boolean normalize;
 
         /**
@@ -52,12 +49,11 @@ public class LetterFrequency {
 
             for(Character c: line.toCharArray()) {
                 //H{t} = H{t} + 1
-                if(map.containsKey(String.valueOf(c))){
-                    long currentValue = map.get(String.valueOf(c));
-                    map.put(String.valueOf(c), currentValue+1);
+                if(map.containsKey(new Text(String.valueOf(c)))) {
+                    map.put(new Text(String.valueOf(c)), new LongWritable(map.get(new Text(String.valueOf(c))).get() + 1));
+                } else {
+                    map.put(new Text(String.valueOf(c)), new LongWritable(1));
                 }
-                else
-                    map.put(String.valueOf(c), 1L);
             }
         }
 
@@ -70,15 +66,13 @@ public class LetterFrequency {
         @Override
         public void cleanup(Context context) throws IOException, InterruptedException {
 
-            for (Map.Entry<String, Long> entry : map.entrySet()) {
-                String key = entry.getKey();
-                Long value = entry.getValue();
-                context.write(new Text(key), new LongWritable(value));
+            for(Map.Entry<Text, LongWritable> entry: map.entrySet()) {
+                context.write(entry.getKey(), entry.getValue());
             }
         }
     }
 
-    public static class CountReducer extends Reducer<Text, LongWritable, Text, DoubleWritable> {
+    public static class FreqReducer extends Reducer<Text, LongWritable, Text, DoubleWritable> {
         // Total number of letters
         private long letterCount;
 
