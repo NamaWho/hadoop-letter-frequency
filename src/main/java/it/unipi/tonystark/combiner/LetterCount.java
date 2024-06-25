@@ -28,7 +28,7 @@ public class LetterCount {
             normalize = Boolean.parseBoolean(context.getConfiguration().get(MapReduceApp.getNORMALIZE_PARAM_NAME()));
 
             one = new LongWritable(1);
-            letterCountKey = new Text("LetterCount");
+            letterCountKey = new Text(MapReduceApp.getLETTER_COUNT_KEY());
         
         }
 
